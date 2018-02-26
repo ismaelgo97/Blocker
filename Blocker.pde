@@ -32,11 +32,6 @@ void setup(){
         }
     }
 
-
-
-
-
-
     */
 
     for (int i = 0; i < 2; i++){
@@ -45,6 +40,7 @@ void setup(){
             a++;
         }
     }
+    
     for (int i = 2; i < 4; i++){
         for (int j = 0; j < 10; j++){
             blocks[a]= new Block(j, i, green);
