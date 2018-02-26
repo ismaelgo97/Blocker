@@ -25,7 +25,7 @@ class Line{
 
     void update(int k){
         switch(k){
-          case 37: if(pos.getX()>0) pos.moveX(-10);
+          case 37: if(pos.getX() > 0) pos.moveX(-10);
           break;
           case 39: if(pos.getX() < width - w) pos.moveX(10);
           break;

@@ -124,30 +124,30 @@ class Ball{
     }
 }
 class Block{
-    float posx;
-    float posy;
-    float ancho=100;
-    float alto=30;
+    Point pos;
+    float w = 100;
+    float h = 30;
     int c;
     boolean alive = true;
 
 
-    Block(int i, int j){
-        posx=i*100;
-        posy=j*30;
+    Block(int i, int j) {
+        initPos(i, j);
         c = color(random(1, 255), random(1, 255), random(1, 255));
     }
 
     Block(int i, int j, float r, float g, float b){
-        posx = i*100;
-        posy = j*30;
+        initPos(i, j);
         c = color(r, g, b);
     }
 
     Block(int i, int j, int c) {
-        posx = i*100;
-        posy = j*30;
+        initPos(i, j);
         this.c = c;
+    }
+
+    public void initPos(int i, int j) {
+        pos = new Point(i * w, j * h);
     }
 
     public void remove() {
@@ -161,22 +161,7 @@ class Block{
 
     public void show(){
         fill(c);
-        rect(posx, posy, ancho, alto);
-    }
-}
-class Color {
-    float r, g, b;
-    Color(float r, float g, float b) {
-        this.r = r; this.g = g; this.b = b;
-    }
-    public float getR() {
-        return r;
-    }
-    public float getG() {
-        return g;
-    }
-    public float getB() {
-        return b;
+        rect(pos.getX(), pos.getY(), w, h);
     }
 }
 class Line{
