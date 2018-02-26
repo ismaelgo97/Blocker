@@ -26,7 +26,7 @@ class Block{
     }
 
     void remove() {
-        c = Colors.Black;
+        c = Colors.Black.getColor();
     }
 
     void update(){

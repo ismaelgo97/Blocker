@@ -1,9 +1,9 @@
 class Line{
     // Se va a dejar de usar
-    float a, b;
+    // float a, b;
     // ------ //
     Point pos;
-    float w, h;
+    private float w, h;
 
 
     Line(){

@@ -10,20 +10,20 @@ void setup(){
     int a = 0;
     for (int i = 0; i < 2; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, Colors.Red);
+            blocks[a]= new Block(j, i, Colors.Red.getColor());
             a++;
         }
     }
     for (int i = 2; i < 4; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, Colors.Green);
+            blocks[a]= new Block(j, i, Colors.Green.getColor());
             a++;
         }
     }
 
     for (int i = 4; i < 6; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, Colors.Blue);
+            blocks[a]= new Block(j, i, Colors.Blue.getColor());
             a++;
         }
     }

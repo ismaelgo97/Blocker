@@ -26,20 +26,20 @@ public void setup(){
     int a = 0;
     for (int i = 0; i < 2; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, Colors.Red.getColor());
+            blocks[a]= new Block(j, i, Colors.Red);
             a++;
         }
     }
     for (int i = 2; i < 4; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, Colors.Green.getColor());
+            blocks[a]= new Block(j, i, Colors.Green);
             a++;
         }
     }
 
     for (int i = 4; i < 6; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, Colors.Blue.getColor());
+            blocks[a]= new Block(j, i, Colors.Blue);
             a++;
         }
     }
@@ -147,7 +147,7 @@ class Block{
     }
 
     public void remove() {
-        c = Colors.Black.getColor();
+        c = Colors.Black;
     }
 
     public void update(){
@@ -175,30 +175,20 @@ class Color {
         return b;
     }
 }
-enum Colors {
-    Red,
-    Blue,
-    Green,
-    Yellow,
-    Black;
-
-    public Blocker.Color getColor() {
-        switch(this) {
-            case Red: return new Blocker.Color(255, 0, 0); break;
-            case Blue: return new Blocker.Color(0, 255, 0); break;
-            case Green: return new Blocker.Color(0, 0, 255); break;
-            case Yellow: return new Blocker.Color(255, 255, 0); break;
-            case Black: return new Blocker.Color(0, 0, 0); break;
-            default: break;
-        }
-    }
+class Colors {
+    public static final Color Red     = new Color(255, 0, 0);
+    public static final Color Green   = new Color(0, 255, 0);
+    public static final Color Blue    = new Color(0, 0, 255);
+    public static final Color Yellow  = new Color(255, 255, 0);
+    public static final Color Black   = new Color(0, 0, 0);
+    public static final Color White   = new Color(255, 255, 255);
 }
 class Line{
     // Se va a dejar de usar
-    float a, b;
+    // float a, b;
     // ------ //
     Point pos;
-    float w, h;
+    private float w, h;
 
 
     Line(){
