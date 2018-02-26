@@ -1,8 +1,16 @@
+
 Block[] blocks = new Block[60];
 Line lit = new Line();
 Ball myballs = new Ball();
 boolean gameStarted = false;
 int contador = 0;
+
+Color[] colorScheme = new Color[4]{
+    new Color(255, 0, 0),
+    new Color(0, 255, 0),
+    new Color(0, 0, 255),
+    new Color(255, 255, 0)
+};
 
 void setup(){
     size(1000, 720);
