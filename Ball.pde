@@ -20,8 +20,17 @@ class Ball {
         vcty = -4;
     }
 
+    void changeWayX() {
+        vctx *= -1;
+    }
+
+    void changeWayY() {
+        vcty *= -1;
+    }
+
+
     float getRadius() {
-        return radius/2;
+        return radius;
     }
 
     private boolean isTouchingLine(Line line) {
@@ -45,10 +54,10 @@ class Ball {
 
     void update() {
         if (isTouchingSideBorders()) {
-            vctx *= -1;
+            changeWayX();
         }
         if (isTouchingTopBorder()) {
-            vcty *= -1;
+            changeWayY();
         }
         centre.move(vctx*vx, vcty*vy);
     }
