@@ -64,7 +64,6 @@ public void draw(){
 
     lit.show();
 
-
     for (int i = 0; i < blocks.length; i++){
         if (blocks[i].isAlive()) {
             blocks[i].show();
@@ -73,6 +72,7 @@ public void draw(){
     }
 
     ball.show();
+    
     fill(255);
     text("Created by Ismael and Carlos   (C) 2018", 20, 700);
 }
@@ -135,10 +135,6 @@ class Ball {
             || this.centre.getX() == width;
     }
 
-    private boolean isTouchingBlock(Block block) {
-        return false;
-    }
-
     public void update() {
         if (isTouchingSideBorders()) {
             changeWayX();
@@ -151,13 +147,8 @@ class Ball {
 
     public void update(Line line) {
         if (isTouchingLine(line)) {
-            vcty *= -1;
+            changeWayY();
         }
-        update();
-    }
-
-    public void update(Block block) {
-
         update();
     }
 
@@ -232,15 +223,15 @@ class Block {
    }
 
     private boolean isTouched(Ball ball) {
+        boolean touched = false;
         if (isTop(ball) || isBottom(ball)) {
             ball.changeWayY();
-            return true;
+            touched = true;
         } else if (isLeft(ball) || isRight(ball)) {
             ball.changeWayX();
-            return true;
-        } else {
-            return false;
+            touched = true;
         }
+        return touched;
     }
 
     public boolean isAlive() {
@@ -249,7 +240,6 @@ class Block {
 
     private void remove() {
         alive = false;
-        c = color(0, 0, 0);
     }
 
     public void update(Ball ball){
@@ -257,7 +247,6 @@ class Block {
             remove();
         }
     }
-
 
     public void show(){
         fill(c);
