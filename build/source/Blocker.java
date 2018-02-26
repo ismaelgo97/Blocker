@@ -18,6 +18,8 @@ public class Blocker extends PApplet {
 Block[] blocks = new Block[60];
 Line lit = new Line();
 Ball ball = new Ball();
+
+Player player = new Player("Pepe");
 boolean gameStarted = false;
 
 int red = color(255, 0, 0);
@@ -65,16 +67,25 @@ public void draw(){
     lit.show();
 
     for (int i = 0; i < blocks.length; i++){
-        if (blocks[i].isAlive()) {
+        int cont=0;
+        boolean isAlive = blocks[i].isAlive();
+        player.update(isAlive, ball);
+        if (isAlive) {
             blocks[i].show();
             blocks[i].update(ball);
         }
+        if(!isAlive) {
+            cont++;
+        }
+        text(cont*100, 900, 700);
     }
 
+    player.show();
     ball.show();
-    
+
     fill(255);
     text("Created by Ismael and Carlos   (C) 2018", 20, 700);
+
 }
 
 public void keyPressed() {
@@ -99,7 +110,7 @@ class Ball {
 
     private void initPos() {
         radius = 15;
-        centre = new Point(width/2, 640);
+        centre = new Point(500, 640);
     }
 
     private void initVector() {
@@ -338,19 +349,29 @@ class Line {
 class Player {
     String name;
     float score;
+    float lives;
 
     Player(String s){
         name=s;
         score=0;
+        lives=3;
     }
 
     public void show(){
         text(name+" : "+score, width-80, height-40);
+        text("lives: "+lives, width-80, height-30);
     }
 
-    public void update(Block block, Ball ball){
-        if (block.isTouched(ball)) {
+    public boolean lost(){
+        return lives==0;
+    }
+
+    public void update(boolean isAlive, Ball ball){
+        if (!isAlive) {
             score += 100;
+        }
+        if (ball.centre.getX()==height){
+            lives-=1;
         }
     }
 }

@@ -48,6 +48,10 @@ class Ball {
             || this.centre.getX() == width;
     }
 
+    boolean isTouchingDown() {
+        return this.centre.getY() == height;
+    }
+
     void update() {
         if (isTouchingSideBorders()) {
             changeWayX();

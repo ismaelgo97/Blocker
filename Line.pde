@@ -4,7 +4,6 @@ class Line {
     private float w, h;
     private float velocity = 35;
 
-
     Line(){
         restore();
     }
