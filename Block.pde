@@ -72,7 +72,7 @@ class Block {
     boolean isAlive() {
         return alive;
     }
-    
+
     void update(Ball ball){
         if (isTouched(ball)) {
             alive = false;

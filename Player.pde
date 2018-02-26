@@ -11,8 +11,8 @@ class Player {
         text(name+" : "+score, width-80, height-40);
     }
 
-    void update(Block block){
-        if (block.isTouched()) {
+    void update(Block block, Ball ball){
+        if (block.isTouched(ball)) {
             score += 100;
         }
     }
