@@ -58,29 +58,24 @@ class Block {
    }
 
     private boolean isTouched(Ball ball) {
+        boolean touched = false;
         if (isTop(ball) || isBottom(ball)) {
             ball.changeWayY();
-            return true;
+            touched = true;
         } else if (isLeft(ball) || isRight(ball)) {
             ball.changeWayX();
-            return true;
-        } else {
-            return false;
+            touched = true;
         }
+        return touched;
     }
 
     boolean isAlive() {
         return alive;
     }
-
-    private void remove() {
-        alive = false;
-        c = color(0, 0, 0);
-    }
-
+    
     void update(Ball ball){
         if (isTouched(ball)) {
-            remove();
+            alive = false;
         }
     }
 

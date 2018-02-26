@@ -1,7 +1,4 @@
 class Line {
-    // Se va a dejar de usar
-    // float a, b;
-    // ------ //
     Point pos;
     Point endPos;
     private float w, h;
