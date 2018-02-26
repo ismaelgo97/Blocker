@@ -3,7 +3,7 @@ class Block {
     Point pos, endPos;
 
     // Rectangle Coordinates
-    Coordinate upleft, upright, downleft, downright;
+    Point upleft, upright, downleft, downright;
 
     //
     float w = 100;
@@ -83,7 +83,6 @@ class Block {
             remove();
         }
     }
-
 
     void show(){
         fill(c);
