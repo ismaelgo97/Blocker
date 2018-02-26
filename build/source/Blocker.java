@@ -21,25 +21,30 @@ Ball myballs = new Ball();
 boolean gameStarted = false;
 int contador = 0;
 
+int red = color(255, 0, 0);
+int green = color(0, 255, 0);
+int blue = color(0, 0, 255);
+int yellow = color(255, 255, 0);
+
 public void setup(){
     
     int a = 0;
     for (int i = 0; i < 2; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, Colors.Red);
+            blocks[a]= new Block(j, i, red);
             a++;
         }
     }
     for (int i = 2; i < 4; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, Colors.Green);
+            blocks[a]= new Block(j, i, green);
             a++;
         }
     }
 
     for (int i = 4; i < 6; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, Colors.Blue);
+            blocks[a]= new Block(j, i, blue);
             a++;
         }
     }
@@ -124,30 +129,30 @@ class Block{
     float posy;
     float ancho=100;
     float alto=30;
-    Color c;
+    int c;
     boolean alive = true;
 
 
     Block(int i, int j){
         posx=i*100;
         posy=j*30;
-        c = new Color(random(1, 255), random(1, 255), random(1, 255));
+        c = color(random(1, 255), random(1, 255), random(1, 255));
     }
 
     Block(int i, int j, float r, float g, float b){
         posx = i*100;
         posy = j*30;
-        c = new Color(r, g, b);
+        c = color(r, g, b);
     }
 
-    Block(int i, int j, Color c) {
+    Block(int i, int j, int c) {
         posx = i*100;
         posy = j*30;
         this.c = c;
     }
 
     public void remove() {
-        c = Colors.Black;
+        c = color(0, 0, 0);
     }
 
     public void update(){
@@ -156,7 +161,7 @@ class Block{
 
 
     public void show(){
-        fill(c.getR(), c.getG(), c.getB());
+        fill(c);
         rect(posx, posy, ancho, alto);
     }
 }
@@ -174,14 +179,6 @@ class Color {
     public float getB() {
         return b;
     }
-}
-class Colors {
-    public static final Color Red     = new Color(255, 0, 0);
-    public static final Color Green   = new Color(0, 255, 0);
-    public static final Color Blue    = new Color(0, 0, 255);
-    public static final Color Yellow  = new Color(255, 255, 0);
-    public static final Color Black   = new Color(0, 0, 0);
-    public static final Color White   = new Color(255, 255, 255);
 }
 class Line{
     // Se va a dejar de usar

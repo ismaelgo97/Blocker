@@ -5,25 +5,30 @@ Ball myballs = new Ball();
 boolean gameStarted = false;
 int contador = 0;
 
+color red = color(255, 0, 0);
+color green = color(0, 255, 0);
+color blue = color(0, 0, 255);
+color yellow = color(255, 255, 0);
+
 void setup(){
     size(1000, 720);
     int a = 0;
     for (int i = 0; i < 2; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, Colors.Red.getColor());
+            blocks[a]= new Block(j, i, red);
             a++;
         }
     }
     for (int i = 2; i < 4; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, Colors.Green.getColor());
+            blocks[a]= new Block(j, i, green);
             a++;
         }
     }
 
     for (int i = 4; i < 6; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, Colors.Blue.getColor());
+            blocks[a]= new Block(j, i, blue);
             a++;
         }
     }
