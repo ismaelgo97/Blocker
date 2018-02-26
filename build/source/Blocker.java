@@ -17,9 +17,8 @@ public class Blocker extends PApplet {
 
 Block[] blocks = new Block[60];
 Line lit = new Line();
-Ball myballs = new Ball();
+Ball ball = new Ball();
 boolean gameStarted = false;
-int contador = 0;
 
 int red = color(255, 0, 0);
 int green = color(0, 255, 0);
@@ -54,24 +53,27 @@ public void setup(){
 public void draw(){
     background(0);
 
-    for (int i = 0; i < blocks.length; i++){
-        if (blocks[i].isAlive()) {
-            blocks[i].show();
-            blocks[i].update(myballs);
-        }
-    }
-
-    lit.show();
-    myballs.show();
-
     if(gameStarted) {
-        myballs.update(lit);
-        if(myballs.pos.getY() == height){
-            myballs.restore();
+        ball.update(lit);
+        if(ball.centre.getY() == height){
+            ball.restore();
             lit.restore();
             gameStarted=false;
         }
     }
+
+    lit.show();
+    ball.show();
+
+    for (int i = 0; i < blocks.length; i++){
+        if (blocks[i].isAlive()) {
+            blocks[i].show();
+            blocks[i].update(ball);
+        }
+    }
+
+
+    fill(255);
     text("Created by Ismael and Carlos   (C) 2018", 20, 700);
 }
 
@@ -84,7 +86,7 @@ public void keyPressed() {
     }
 }
 class Ball {
-    Point pos;
+    Point centre;
     // float xl, yl;
     private float radius;
     private float vctx, vcty;
@@ -98,7 +100,7 @@ class Ball {
 
     private void initPos() {
         radius = 15;
-        pos = new Point(500, 640);
+        centre = new Point(500, 640);
     }
 
     private void initVector() {
@@ -110,20 +112,45 @@ class Ball {
         return radius/2;
     }
 
-    public void update(Line line){
-        if (pos.getX() > line.pos.getX() && pos.getX() < line.endPos.getX() && (pos.getY() + getRadius()) > line.pos.getY()) {
-            vcty *= -1;
-        }
+    private boolean isTouchingLine(Line line) {
+        return this.centre.getX() > line.pos.getX()
+            && this.centre.getX() < line.endPos.getX()
+            && this.centre.getY() + this.getRadius() > line.pos.getY();
+    }
 
-        if(pos.getY() == 0){
-            vcty *= -1;
-        }
+    private boolean isTouchingTopBorder() {
+        return this.centre.getY() == 0;
+    }
 
-        if(pos.getX() == 0 || pos.getX() == width){
+    private boolean isTouchingSideBorders() {
+        return this.centre.getX() == 0
+            || this.centre.getX() == width;
+    }
+
+    private boolean isTouchingBlock(Block block) {
+        return false;
+    }
+
+    public void update() {
+        if (isTouchingSideBorders()) {
             vctx *= -1;
         }
+        if (isTouchingTopBorder()) {
+            vcty *= -1;
+        }
+        centre.move(vctx*vx, vcty*vy);
+    }
 
-        pos.move(vctx*vx, vcty*vy);
+    public void update(Line line) {
+        if (isTouchingLine(line)) {
+            vcty *= -1;
+        }
+        update();
+    }
+
+    public void update(Block block) {
+
+        update();
     }
 
     public void restore(){
@@ -134,7 +161,7 @@ class Ball {
     public void show(){
         fill(255);
         ellipseMode(CENTER);
-        ellipse(pos.getX(), pos.getY(), radius, radius);
+        ellipse(centre.getX(), centre.getY(), radius, radius);
     }
 }
 class Block {
@@ -167,7 +194,9 @@ class Block {
     }
 
     private boolean isTouched(Ball ball) {
-        if (ball.pos.getX() > pos.getX() && ball.pos.getX() < endPos.getX() && pos.getY() + h == ball.pos.getY()) {
+        if (ball.centre.getX() > pos.getX()
+        && ball.centre.getX() < endPos.getX() 
+        && pos.getY() + h == ball.centre.getY() - ball.getRadius()) {
             return true;
         } else {
             return false;
@@ -195,62 +224,10 @@ class Block {
         rect(pos.getX(), pos.getY(), w, h);
     }
 }
-class Line {
-    // Se va a dejar de usar
-    // float a, b;
-    // ------ //
-    Point pos;
-    Point endPos;
-    private float w, h;
-
-
-    Line(){
-        initPos();
-        defaultSize();
-    }
-
-    private void defaultSize() {
-        w = 100; h = 5;
-    }
-
-    private void initPos() {
-        pos = new Point(450, 650);
-        endPos = new Point(pos.getX() + w, pos.getY());
-    }
-
-    private void move(int x) {
-        pos.moveX(x);
-        endPos.moveX(x);
-    }
-
-    public void restore() {
-        initPos();
-    }
-
-    public float getWidth() {
-        return w;
-    }
-
-    public void update(int k){
-        switch(k){
-          case 37: if(pos.getX() > 0) move(-10);
-          break;
-          case 39: if(pos.getX() < width - w) move(10);
-          break;
-          default:
-          break;
-        }
-    }
-
-    public void show(){
-        fill(255);
-        rect(pos.getX(), pos.getY(), w, h);
-    }
-}
-class Point {
+class Coordinate {
     private float x, y;
-    
-    Point(float x, float y) {
+
+    Coordinate(float x, float y) {
         this.x = x; this.y = y;
     }
 
@@ -281,6 +258,64 @@ class Point {
     public void move(float x, float y) {
         moveX(x);
         moveY(y);
+    }
+}
+class Line {
+    // Se va a dejar de usar
+    // float a, b;
+    // ------ //
+    Point pos;
+    Point endPos;
+    private float w, h;
+    private float velocity = 20;
+
+
+    Line(){
+        initPos();
+        defaultSize();
+    }
+
+    private void defaultSize() {
+        w = 100; h = 5;
+    }
+
+    private void initPos() {
+        pos = new Point(450, 650);
+        endPos = new Point(pos.getX() + w, pos.getY());
+    }
+
+    private void move(float x) {
+        pos.moveX(x);
+        endPos.moveX(x);
+    }
+
+    public void restore() {
+        initPos();
+    }
+
+    public float getWidth() {
+        return w;
+    }
+
+    public void update(int k){
+        switch(k){
+          case 37: if(pos.getX() > 0) move(-1*velocity);
+          break;
+          case 39: if(pos.getX() < width - w) move(velocity);
+          break;
+          default:
+          break;
+        }
+    }
+
+    public void show(){
+        fill(255);
+        rect(pos.getX(), pos.getY(), w, h);
+    }
+}
+class Point extends Coordinate {
+    Point(float x, float y) {
+        super(x, y);
     }
 }
   public void settings() {  size(1000, 720); }

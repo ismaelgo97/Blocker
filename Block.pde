@@ -28,7 +28,9 @@ class Block {
     }
 
     private boolean isTouched(Ball ball) {
-        if (ball.pos.getX() > pos.getX() && ball.pos.getX() < endPos.getX() && pos.getY() + h == ball.pos.getY()) {
+        if (ball.centre.getX() > pos.getX()
+        && ball.centre.getX() < endPos.getX() 
+        && pos.getY() + h == ball.centre.getY() - ball.getRadius()) {
             return true;
         } else {
             return false;

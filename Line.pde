@@ -5,6 +5,7 @@ class Line {
     Point pos;
     Point endPos;
     private float w, h;
+    private float velocity = 20;
 
 
     Line(){
@@ -21,7 +22,7 @@ class Line {
         endPos = new Point(pos.getX() + w, pos.getY());
     }
 
-    private void move(int x) {
+    private void move(float x) {
         pos.moveX(x);
         endPos.moveX(x);
     }
@@ -36,9 +37,9 @@ class Line {
 
     void update(int k){
         switch(k){
-          case 37: if(pos.getX() > 0) move(-10);
+          case 37: if(pos.getX() > 0) move(-1*velocity);
           break;
-          case 39: if(pos.getX() < width - w) move(10);
+          case 39: if(pos.getX() < width - w) move(velocity);
           break;
           default:
           break;

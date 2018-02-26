@@ -1,5 +1,5 @@
 class Ball {
-    Point pos;
+    Point centre;
     // float xl, yl;
     private float radius;
     private float vctx, vcty;
@@ -13,7 +13,7 @@ class Ball {
 
     private void initPos() {
         radius = 15;
-        pos = new Point(500, 640);
+        centre = new Point(500, 640);
     }
 
     private void initVector() {
@@ -25,20 +25,45 @@ class Ball {
         return radius/2;
     }
 
-    void update(Line line){
-        if (pos.getX() > line.pos.getX() && pos.getX() < line.endPos.getX() && (pos.getY() + getRadius()) > line.pos.getY()) {
-            vcty *= -1;
-        }
+    private boolean isTouchingLine(Line line) {
+        return this.centre.getX() > line.pos.getX()
+            && this.centre.getX() < line.endPos.getX()
+            && this.centre.getY() + this.getRadius() > line.pos.getY();
+    }
 
-        if(pos.getY() == 0){
-            vcty *= -1;
-        }
+    private boolean isTouchingTopBorder() {
+        return this.centre.getY() == 0;
+    }
 
-        if(pos.getX() == 0 || pos.getX() == width){
+    private boolean isTouchingSideBorders() {
+        return this.centre.getX() == 0
+            || this.centre.getX() == width;
+    }
+
+    private boolean isTouchingBlock(Block block) {
+        return false;
+    }
+
+    void update() {
+        if (isTouchingSideBorders()) {
             vctx *= -1;
         }
+        if (isTouchingTopBorder()) {
+            vcty *= -1;
+        }
+        centre.move(vctx*vx, vcty*vy);
+    }
 
-        pos.move(vctx*vx, vcty*vy);
+    void update(Line line) {
+        if (isTouchingLine(line)) {
+            vcty *= -1;
+        }
+        update();
+    }
+
+    void update(Block block) {
+
+        update();
     }
 
     void restore(){
@@ -49,6 +74,6 @@ class Ball {
     void show(){
         fill(255);
         ellipseMode(CENTER);
-        ellipse(pos.getX(), pos.getY(), radius, radius);
+        ellipse(centre.getX(), centre.getY(), radius, radius);
     }
 }

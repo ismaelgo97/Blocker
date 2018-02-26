@@ -1,9 +1,8 @@
 
 Block[] blocks = new Block[60];
 Line lit = new Line();
-Ball myballs = new Ball();
+Ball ball = new Ball();
 boolean gameStarted = false;
-int contador = 0;
 
 color red = color(255, 0, 0);
 color green = color(0, 255, 0);
@@ -38,24 +37,27 @@ void setup(){
 void draw(){
     background(0);
 
-    for (int i = 0; i < blocks.length; i++){
-        if (blocks[i].isAlive()) {
-            blocks[i].show();
-            blocks[i].update(myballs);
-        }
-    }
-
-    lit.show();
-    myballs.show();
-
     if(gameStarted) {
-        myballs.update(lit);
-        if(myballs.pos.getY() == height){
-            myballs.restore();
+        ball.update(lit);
+        if(ball.centre.getY() == height){
+            ball.restore();
             lit.restore();
             gameStarted=false;
         }
     }
+
+    lit.show();
+    ball.show();
+
+    for (int i = 0; i < blocks.length; i++){
+        if (blocks[i].isAlive()) {
+            blocks[i].show();
+            blocks[i].update(ball);
+        }
+    }
+
+
+    fill(255);
     text("Created by Ismael and Carlos   (C) 2018", 20, 700);
 }
 
