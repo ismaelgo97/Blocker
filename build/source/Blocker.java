@@ -21,32 +21,25 @@ Ball myballs = new Ball();
 boolean gameStarted = false;
 int contador = 0;
 
-Color[] colorScheme = {
-    Colors.Red,
-    Colors.Blue,
-    Colors.Yellow,
-    Colors.Green
-};
-
 public void setup(){
     
-    int a=0;
+    int a = 0;
     for (int i = 0; i < 2; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, 255, 0, 0);
+            blocks[a]= new Block(j, i, Colors.Red.getColor());
             a++;
         }
     }
     for (int i = 2; i < 4; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, 0, 255, 0);
+            blocks[a]= new Block(j, i, Colors.Green.getColor());
             a++;
         }
     }
 
     for (int i = 4; i < 6; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, 0, 0, 255);
+            blocks[a]= new Block(j, i, Colors.Blue.getColor());
             a++;
         }
     }
@@ -127,7 +120,7 @@ class Ball{
     }
 }
 class Block{
-    float posx ;
+    float posx;
     float posy;
     float ancho=100;
     float alto=30;
@@ -154,7 +147,7 @@ class Block{
     }
 
     public void remove() {
-        r = g = b = 0;
+        c = Colors.Black.getColor();
     }
 
     public void update(){
@@ -163,7 +156,7 @@ class Block{
 
 
     public void show(){
-        fill(r,g,b);
+        fill(c.getR(), c.getG(), c.getB());
         rect(posx, posy, ancho, alto);
     }
 }
@@ -183,21 +176,42 @@ class Color {
     }
 }
 enum Colors {
-    Red(new Color(255, 0, 0)),
-    Blue(new Color(0, 255, 0)),
-    Green(new Color(0, 0, 255)),
-    Yellow(new Color(255, 255, 0))
+    Red,
+    Blue,
+    Green,
+    Yellow,
+    Black;
+
+    public Blocker.Color getColor() {
+        switch(this) {
+            case Red: return new Blocker.Color(255, 0, 0); break;
+            case Blue: return new Blocker.Color(0, 255, 0); break;
+            case Green: return new Blocker.Color(0, 0, 255); break;
+            case Yellow: return new Blocker.Color(255, 255, 0); break;
+            case Black: return new Blocker.Color(0, 0, 0); break;
+            default: break;
+        }
+    }
 }
 class Line{
+    // Se va a dejar de usar
     float a, b;
+    // ------ //
+    Point pos;
+    float w, h;
+
 
     Line(){
         initPos();
+        defaultSize();
+    }
+
+    public void defaultSize() {
+        w = 100; h = 5;
     }
 
     public void initPos() {
-        a=450;
-        b=650;
+        pos = new Point(450, 650);
     }
 
     public void reset() {
@@ -206,9 +220,9 @@ class Line{
 
     public void update(int k){
         switch(k){
-          case 37: if(a>0) a=a-10;
+          case 37: if(pos.getX()>0) pos.moveX(-10);
           break;
-          case 39: if(a<900) a=a+10;
+          case 39: if(pos.getX() < width - w) pos.moveX(10);
           break;
           default:
           break;
@@ -217,11 +231,12 @@ class Line{
 
     public void show(){
         fill(255);
-        rect(a, b, 100, 5);
+        rect(pos.getX(), pos.getY(), w, h);
     }
 }
 class Point {
-    float x, y;
+    private float x, y;
+    
     Point(float x, float y) {
         this.x = x; this.y = y;
     }
@@ -234,12 +249,25 @@ class Point {
         this.x = x;
     }
 
+    public void moveX(float x) {
+        setX(getX() + x);
+    }
+
     public float getY() {
-        return x;
+        return y;
     }
 
     public void setY(float y) {
-        this.x = x;
+        this.y = y;
+    }
+
+    public void moveY(float y) {
+        setY(getY() + y);
+    }
+
+    public void move(float x, float y) {
+        moveX(x);
+        moveY(y);
     }
 }
   public void settings() {  size(1000, 720); }

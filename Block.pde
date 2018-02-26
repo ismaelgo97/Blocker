@@ -1,5 +1,5 @@
 class Block{
-    float posx ;
+    float posx;
     float posy;
     float ancho=100;
     float alto=30;
@@ -26,7 +26,7 @@ class Block{
     }
 
     void remove() {
-        r = g = b = 0;
+        c = Colors.Black;
     }
 
     void update(){
@@ -35,7 +35,7 @@ class Block{
 
 
     void show(){
-        fill(r,g,b);
+        fill(c.getR(), c.getG(), c.getB());
         rect(posx, posy, ancho, alto);
     }
 }

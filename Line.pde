@@ -1,13 +1,22 @@
 class Line{
+    // Se va a dejar de usar
     float a, b;
+    // ------ //
+    Point pos;
+    float w, h;
+
 
     Line(){
         initPos();
+        defaultSize();
+    }
+
+    void defaultSize() {
+        w = 100; h = 5;
     }
 
     void initPos() {
-        a=450;
-        b=650;
+        pos = new Point(450, 650);
     }
 
     void reset() {
@@ -16,9 +25,9 @@ class Line{
 
     void update(int k){
         switch(k){
-          case 37: if(a>0) a=a-10;
+          case 37: if(pos.getX()>0) pos.moveX(-10);
           break;
-          case 39: if(a<900) a=a+10;
+          case 39: if(pos.getX() < width - w) pos.moveX(10);
           break;
           default:
           break;
@@ -27,6 +36,6 @@ class Line{
 
     void show(){
         fill(255);
-        rect(a, b, 100, 5);
+        rect(pos.getX(), pos.getY(), w, h);
     }
 }

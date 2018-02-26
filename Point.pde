@@ -1,5 +1,6 @@
 class Point {
-    float x, y;
+    private float x, y;
+    
     Point(float x, float y) {
         this.x = x; this.y = y;
     }
@@ -12,11 +13,24 @@ class Point {
         this.x = x;
     }
 
+    void moveX(float x) {
+        setX(getX() + x);
+    }
+
     float getY() {
-        return x;
+        return y;
     }
 
     void setY(float y) {
-        this.x = x;
+        this.y = y;
+    }
+
+    void moveY(float y) {
+        setY(getY() + y);
+    }
+
+    void move(float x, float y) {
+        moveX(x);
+        moveY(y);
     }
 }

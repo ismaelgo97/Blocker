@@ -5,32 +5,25 @@ Ball myballs = new Ball();
 boolean gameStarted = false;
 int contador = 0;
 
-Color[] colorScheme = {
-    Colors.Red,
-    Colors.Blue,
-    Colors.Yellow,
-    Colors.Green
-};
-
 void setup(){
     size(1000, 720);
-    int a=0;
+    int a = 0;
     for (int i = 0; i < 2; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, 255, 0, 0);
+            blocks[a]= new Block(j, i, Colors.Red);
             a++;
         }
     }
     for (int i = 2; i < 4; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, 0, 255, 0);
+            blocks[a]= new Block(j, i, Colors.Green);
             a++;
         }
     }
 
     for (int i = 4; i < 6; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, 0, 0, 255);
+            blocks[a]= new Block(j, i, Colors.Blue);
             a++;
         }
     }
