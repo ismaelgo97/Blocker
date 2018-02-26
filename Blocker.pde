@@ -10,6 +10,7 @@ Color[] colorScheme = new Color[4]{
     new Color(0, 255, 0),
     new Color(0, 0, 255),
     new Color(255, 255, 0)
+
 };
 
 void setup(){
