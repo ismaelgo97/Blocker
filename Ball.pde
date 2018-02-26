@@ -1,8 +1,8 @@
 class Ball {
     Point pos;
     // float xl, yl;
-    float radius;
-    float vctx, vcty;
+    private float radius;
+    private float vctx, vcty;
     int vx = 1;
     int vy = 1;
 
@@ -11,20 +11,18 @@ class Ball {
         initVector();
     }
 
-    void initPos() {
+    private void initPos() {
         radius = 15;
         pos = new Point(500, 640);
     }
 
-    void initVector() {
+    private void initVector() {
         vctx = random(4, -4);
         vcty = -4;
     }
 
     void update(Line line){
-        if ((pos.getX() > line.pos.getX()
-            && pos.getX() < line.pos.getX() + line.getWidth())
-            && pos.getY() + radius == line.pos.getY()) {
+        if (pos.getX() > line.pos.getX() && pos.getX() < line.endPos.getX() && (pos.getY() + radius/2) > line.pos.getY()) {
             vcty *= -1;
         }
 
@@ -46,6 +44,7 @@ class Ball {
 
     void show(){
         fill(255);
+        ellipseMode(CENTER);
         ellipse(pos.getX(), pos.getY(), radius, radius);
     }
 }

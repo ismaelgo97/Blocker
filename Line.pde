@@ -3,6 +3,7 @@ class Line {
     // float a, b;
     // ------ //
     Point pos;
+    Point endPos;
     private float w, h;
 
 
@@ -11,15 +12,21 @@ class Line {
         defaultSize();
     }
 
-    void defaultSize() {
+    private void defaultSize() {
         w = 100; h = 5;
     }
 
-    void initPos() {
+    private void initPos() {
         pos = new Point(450, 650);
+        endPos = new Point(pos.getX() + w, pos.getY());
     }
 
-    void reset() {
+    private void move(int x) {
+        pos.moveX(x);
+        endPos.moveX(x);
+    }
+
+    void restore() {
         initPos();
     }
 
@@ -29,9 +36,9 @@ class Line {
 
     void update(int k){
         switch(k){
-          case 37: if(pos.getX() > 0) pos.moveX(-10);
+          case 37: if(pos.getX() > 0) move(-10);
           break;
-          case 39: if(pos.getX() < width - w) pos.moveX(10);
+          case 39: if(pos.getX() < width - w) move(10);
           break;
           default:
           break;

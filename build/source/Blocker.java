@@ -81,8 +81,8 @@ public void draw(){
 class Ball {
     Point pos;
     // float xl, yl;
-    float radius;
-    float vctx, vcty;
+    private float radius;
+    private float vctx, vcty;
     int vx = 1;
     int vy = 1;
 
@@ -91,20 +91,18 @@ class Ball {
         initVector();
     }
 
-    public void initPos() {
+    private void initPos() {
         radius = 15;
         pos = new Point(500, 640);
     }
 
-    public void initVector() {
+    private void initVector() {
         vctx = random(4, -4);
         vcty = -4;
     }
 
     public void update(Line line){
-        if ((pos.getX() > line.pos.getX()
-            && pos.getX() < line.pos.getX() + line.getWidth())
-            && pos.getY() + radius == line.pos.getY()) {
+        if (pos.getX() > line.pos.getX() && pos.getX() < line.endPos.getX() && (pos.getY() + radius/2) > line.pos.getY()) {
             vcty *= -1;
         }
 
@@ -126,6 +124,7 @@ class Ball {
 
     public void show(){
         fill(255);
+        ellipseMode(CENTER);
         ellipse(pos.getX(), pos.getY(), radius, radius);
     }
 }
@@ -175,6 +174,7 @@ class Line {
     // float a, b;
     // ------ //
     Point pos;
+    Point endPos;
     private float w, h;
 
 
@@ -183,12 +183,18 @@ class Line {
         defaultSize();
     }
 
-    public void defaultSize() {
+    private void defaultSize() {
         w = 100; h = 5;
     }
 
-    public void initPos() {
+    private void initPos() {
         pos = new Point(450, 650);
+        endPos = new Point(pos.getX() + w, pos.getY());
+    }
+
+    private void move(int x) {
+        pos.moveX(x);
+        endPos.moveX(x);
     }
 
     public void reset() {
@@ -201,9 +207,9 @@ class Line {
 
     public void update(int k){
         switch(k){
-          case 37: if(pos.getX() > 0) pos.moveX(-10);
+          case 37: if(pos.getX() > 0) move(-10);
           break;
-          case 39: if(pos.getX() < width - w) pos.moveX(10);
+          case 39: if(pos.getX() < width - w) move(10);
           break;
           default:
           break;

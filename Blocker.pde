@@ -48,7 +48,7 @@ void draw(){
         myballs.update(lit);
     if(myballs.pos.getY() == height){
         myballs.restore();
-        lit.reset();
+        lit.restore();
         gameStarted=false;
     }
     text("Created by Ismael and Carlos   (C) 2018", 20, 700);
