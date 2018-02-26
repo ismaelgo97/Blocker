@@ -61,8 +61,8 @@ public void draw(){
     lit.show();
     myballs.show();
     if(gameStarted)
-        myballs.update();
-    if(myballs.pos.getY()==height){
+        myballs.update(lit);
+    if(myballs.pos.getY() == height){
         myballs.restore();
         lit.reset();
         gameStarted=false;
@@ -78,7 +78,7 @@ public void draw(){
         gameStarted=true;
     }
 }
-class Ball{
+class Ball {
     Point pos;
     // float xl, yl;
     float radius;
@@ -88,7 +88,7 @@ class Ball{
 
     Ball(){
         initPos();
-        initVelocity();
+        initVector();
     }
 
     public void initPos() {
@@ -96,18 +96,24 @@ class Ball{
         pos = new Point(500, 640);
     }
 
-    public void initVelocity() {
+    public void initVector() {
         vctx = random(4, -4);
         vcty = -4;
     }
 
-    public void update(){
+    public void update(Line line){
+        if ((pos.getX() > line.pos.getX()
+            && pos.getX() < line.pos.getX() + line.getWidth())
+            && pos.getY() + radius == line.pos.getY()) {
+            vcty *= -1;
+        }
+
         if(pos.getY() == 0){
-            vcty*=-1;
+            vcty *= -1;
         }
 
         if(pos.getX() == 0 || pos.getX() == width){
-            vctx*=-1;
+            vctx *= -1;
         }
 
         pos.move(vctx*vx, vcty*vy);
@@ -115,7 +121,7 @@ class Ball{
 
     public void restore(){
         initPos();
-        initVelocity();
+        initVector();
     }
 
     public void show(){
@@ -123,7 +129,7 @@ class Ball{
         ellipse(pos.getX(), pos.getY(), radius, radius);
     }
 }
-class Block{
+class Block {
     Point pos;
     float w = 100;
     float h = 30;
@@ -164,7 +170,7 @@ class Block{
         rect(pos.getX(), pos.getY(), w, h);
     }
 }
-class Line{
+class Line {
     // Se va a dejar de usar
     // float a, b;
     // ------ //
@@ -189,9 +195,13 @@ class Line{
         initPos();
     }
 
+    public float getWidth() {
+        return w;
+    }
+
     public void update(int k){
         switch(k){
-          case 37: if(pos.getX()>0) pos.moveX(-10);
+          case 37: if(pos.getX() > 0) pos.moveX(-10);
           break;
           case 39: if(pos.getX() < width - w) pos.moveX(10);
           break;

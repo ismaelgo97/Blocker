@@ -1,4 +1,4 @@
-class Block{
+class Block {
     Point pos;
     float w = 100;
     float h = 30;

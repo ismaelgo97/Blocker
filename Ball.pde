@@ -1,4 +1,4 @@
-class Ball{
+class Ball {
     Point pos;
     // float xl, yl;
     float radius;
@@ -8,7 +8,7 @@ class Ball{
 
     Ball(){
         initPos();
-        initVelocity();
+        initVector();
     }
 
     void initPos() {
@@ -16,18 +16,24 @@ class Ball{
         pos = new Point(500, 640);
     }
 
-    void initVelocity() {
+    void initVector() {
         vctx = random(4, -4);
         vcty = -4;
     }
 
-    void update(){
+    void update(Line line){
+        if ((pos.getX() > line.pos.getX()
+            && pos.getX() < line.pos.getX() + line.getWidth())
+            && pos.getY() + radius == line.pos.getY()) {
+            vcty *= -1;
+        }
+
         if(pos.getY() == 0){
-            vcty*=-1;
+            vcty *= -1;
         }
 
         if(pos.getX() == 0 || pos.getX() == width){
-            vctx*=-1;
+            vctx *= -1;
         }
 
         pos.move(vctx*vx, vcty*vy);
@@ -35,7 +41,7 @@ class Ball{
 
     void restore(){
         initPos();
-        initVelocity();
+        initVector();
     }
 
     void show(){

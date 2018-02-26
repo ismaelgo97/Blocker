@@ -1,4 +1,4 @@
-class Line{
+class Line {
     // Se va a dejar de usar
     // float a, b;
     // ------ //
@@ -21,6 +21,10 @@ class Line{
 
     void reset() {
         initPos();
+    }
+
+    float getWidth() {
+        return w;
     }
 
     void update(int k){
