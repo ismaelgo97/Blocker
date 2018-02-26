@@ -63,7 +63,7 @@ public void draw(){
     }
 
     lit.show();
-    ball.show();
+
 
     for (int i = 0; i < blocks.length; i++){
         if (blocks[i].isAlive()) {
@@ -72,7 +72,7 @@ public void draw(){
         }
     }
 
-
+    ball.show();
     fill(255);
     text("Created by Ismael and Carlos   (C) 2018", 20, 700);
 }
@@ -94,8 +94,7 @@ class Ball {
     int vy = 1;
 
     Ball(){
-        initPos();
-        initVector();
+        restore();
     }
 
     private void initPos() {
@@ -113,9 +112,9 @@ class Ball {
     }
 
     private boolean isTouchingLine(Line line) {
-        return this.centre.getX() > line.pos.getX()
-            && this.centre.getX() < line.endPos.getX()
-            && this.centre.getY() + this.getRadius() > line.pos.getY();
+        return this.centre.getX() - radius > line.pos.getX()
+            && this.centre.getX() + radius < line.endPos.getX()
+            && this.centre.getY() + radius > line.pos.getY();
     }
 
     private boolean isTouchingTopBorder() {
@@ -271,8 +270,7 @@ class Line {
 
 
     Line(){
-        initPos();
-        defaultSize();
+        restore();
     }
 
     private void defaultSize() {
@@ -280,7 +278,7 @@ class Line {
     }
 
     private void initPos() {
-        pos = new Point(450, 650);
+        pos = new Point(450, 655);
         endPos = new Point(pos.getX() + w, pos.getY());
     }
 
@@ -290,6 +288,7 @@ class Line {
     }
 
     public void restore() {
+        defaultSize();
         initPos();
     }
 

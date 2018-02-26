@@ -9,8 +9,7 @@ class Line {
 
 
     Line(){
-        initPos();
-        defaultSize();
+        restore();
     }
 
     private void defaultSize() {
@@ -18,7 +17,7 @@ class Line {
     }
 
     private void initPos() {
-        pos = new Point(450, 650);
+        pos = new Point(450, 655);
         endPos = new Point(pos.getX() + w, pos.getY());
     }
 
@@ -28,6 +27,7 @@ class Line {
     }
 
     void restore() {
+        defaultSize();
         initPos();
     }
 

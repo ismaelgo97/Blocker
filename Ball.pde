@@ -7,8 +7,7 @@ class Ball {
     int vy = 1;
 
     Ball(){
-        initPos();
-        initVector();
+        restore();
     }
 
     private void initPos() {
@@ -26,9 +25,9 @@ class Ball {
     }
 
     private boolean isTouchingLine(Line line) {
-        return this.centre.getX() > line.pos.getX()
-            && this.centre.getX() < line.endPos.getX()
-            && this.centre.getY() + this.getRadius() > line.pos.getY();
+        return this.centre.getX() - radius > line.pos.getX()
+            && this.centre.getX() + radius < line.endPos.getX()
+            && this.centre.getY() + radius > line.pos.getY();
     }
 
     private boolean isTouchingTopBorder() {

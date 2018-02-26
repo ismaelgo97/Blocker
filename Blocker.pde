@@ -47,7 +47,7 @@ void draw(){
     }
 
     lit.show();
-    ball.show();
+
 
     for (int i = 0; i < blocks.length; i++){
         if (blocks[i].isAlive()) {
@@ -56,7 +56,7 @@ void draw(){
         }
     }
 
-
+    ball.show();
     fill(255);
     text("Created by Ismael and Carlos   (C) 2018", 20, 700);
 }
