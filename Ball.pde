@@ -21,8 +21,12 @@ class Ball {
         vcty = -4;
     }
 
+    float getRadius() {
+        return radius/2;
+    }
+
     void update(Line line){
-        if (pos.getX() > line.pos.getX() && pos.getX() < line.endPos.getX() && (pos.getY() + radius/2) > line.pos.getY()) {
+        if (pos.getX() > line.pos.getX() && pos.getX() < line.endPos.getX() && (pos.getY() + getRadius()) > line.pos.getY()) {
             vcty *= -1;
         }
 

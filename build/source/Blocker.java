@@ -53,24 +53,29 @@ public void setup(){
 
 public void draw(){
     background(0);
+
     for (int i = 0; i < blocks.length; i++){
-        blocks[i].show();
-        blocks[i].update();
+        if (blocks[i].isAlive()) {
+            blocks[i].show();
+            blocks[i].update(myballs);
+        }
     }
 
     lit.show();
     myballs.show();
-    if(gameStarted)
+
+    if(gameStarted) {
         myballs.update(lit);
-    if(myballs.pos.getY() == height){
-        myballs.restore();
-        lit.reset();
-        gameStarted=false;
+        if(myballs.pos.getY() == height){
+            myballs.restore();
+            lit.restore();
+            gameStarted=false;
+        }
     }
     text("Created by Ismael and Carlos   (C) 2018", 20, 700);
 }
 
- public void keyPressed() {
+public void keyPressed() {
     if(gameStarted) {
         lit.update(keyCode);
     }
@@ -101,8 +106,12 @@ class Ball {
         vcty = -4;
     }
 
+    public float getRadius() {
+        return radius/2;
+    }
+
     public void update(Line line){
-        if (pos.getX() > line.pos.getX() && pos.getX() < line.endPos.getX() && (pos.getY() + radius/2) > line.pos.getY()) {
+        if (pos.getX() > line.pos.getX() && pos.getX() < line.endPos.getX() && (pos.getY() + getRadius()) > line.pos.getY()) {
             vcty *= -1;
         }
 
@@ -130,6 +139,7 @@ class Ball {
 }
 class Block {
     Point pos;
+    Point endPos;
     float w = 100;
     float h = 30;
     int c;
@@ -153,14 +163,30 @@ class Block {
 
     public void initPos(int i, int j) {
         pos = new Point(i * w, j * h);
+        endPos = new Point(pos.getX() + w, pos.getY());
     }
 
-    public void remove() {
+    private boolean isTouched(Ball ball) {
+        if (ball.pos.getX() > pos.getX() && ball.pos.getX() < endPos.getX() && pos.getY() + h == ball.pos.getY()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    private void remove() {
+        alive = false;
         c = color(0, 0, 0);
     }
 
-    public void update(){
-
+    public void update(Ball ball){
+        if (isTouched(ball)) {
+            remove();
+        }
     }
 
 
@@ -197,7 +223,7 @@ class Line {
         endPos.moveX(x);
     }
 
-    public void reset() {
+    public void restore() {
         initPos();
     }
 

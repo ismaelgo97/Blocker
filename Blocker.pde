@@ -37,24 +37,29 @@ void setup(){
 
 void draw(){
     background(0);
+
     for (int i = 0; i < blocks.length; i++){
-        blocks[i].show();
-        blocks[i].update();
+        if (blocks[i].isAlive()) {
+            blocks[i].show();
+            blocks[i].update(myballs);
+        }
     }
 
     lit.show();
     myballs.show();
-    if(gameStarted)
+
+    if(gameStarted) {
         myballs.update(lit);
-    if(myballs.pos.getY() == height){
-        myballs.restore();
-        lit.restore();
-        gameStarted=false;
+        if(myballs.pos.getY() == height){
+            myballs.restore();
+            lit.restore();
+            gameStarted=false;
+        }
     }
     text("Created by Ismael and Carlos   (C) 2018", 20, 700);
 }
 
- void keyPressed() {
+void keyPressed() {
     if(gameStarted) {
         lit.update(keyCode);
     }
