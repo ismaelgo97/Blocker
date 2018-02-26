@@ -12,7 +12,7 @@ class Ball {
 
     private void initPos() {
         radius = 15;
-        centre = new Point(width/2), 640);
+        centre = new Point(width/2, 640);
     }
 
     private void initVector() {
