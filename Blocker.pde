@@ -46,7 +46,7 @@ void draw(){
     myballs.show();
     if(gameStarted)
         myballs.update();
-    if(myballs.y==height){
+    if(myballs.pos.getY()==height){
         myballs.restore();
         lit.reset();
         gameStarted=false;

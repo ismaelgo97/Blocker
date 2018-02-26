@@ -62,7 +62,7 @@ public void draw(){
     myballs.show();
     if(gameStarted)
         myballs.update();
-    if(myballs.y==height){
+    if(myballs.pos.getY()==height){
         myballs.restore();
         lit.reset();
         gameStarted=false;
@@ -79,8 +79,9 @@ public void draw(){
     }
 }
 class Ball{
-
-    float x, y, xl, yl;
+    Point pos;
+    // float xl, yl;
+    float radius;
     float vctx, vcty;
     int vx = 1;
     int vy = 1;
@@ -91,10 +92,8 @@ class Ball{
     }
 
     public void initPos() {
-        xl = 15;
-        yl = 15;
-        x = 500;
-        y = 640;
+        radius = 15;
+        pos = new Point(500, 640);
     }
 
     public void initVelocity() {
@@ -103,16 +102,15 @@ class Ball{
     }
 
     public void update(){
-        if(y==0){
+        if(pos.getY() == 0){
             vcty*=-1;
         }
 
-        if(x==0 || x==width){
+        if(pos.getX() == 0 || pos.getX() == width){
             vctx*=-1;
         }
 
-        x=x+vctx*vx;
-        y=y+vcty*vy;
+        pos.move(vctx*vx, vcty*vy);
     }
 
     public void restore(){
@@ -122,7 +120,7 @@ class Ball{
 
     public void show(){
         fill(255);
-        ellipse(x, y, xl, yl);
+        ellipse(pos.getX(), pos.getY(), radius, radius);
     }
 }
 class Block{

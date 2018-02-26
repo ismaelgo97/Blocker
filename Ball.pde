@@ -1,6 +1,7 @@
 class Ball{
-
-    float x, y, xl, yl;
+    Point pos;
+    // float xl, yl;
+    float radius;
     float vctx, vcty;
     int vx = 1;
     int vy = 1;
@@ -11,10 +12,8 @@ class Ball{
     }
 
     void initPos() {
-        xl = 15;
-        yl = 15;
-        x = 500;
-        y = 640;
+        radius = 15;
+        pos = new Point(500, 640);
     }
 
     void initVelocity() {
@@ -23,16 +22,15 @@ class Ball{
     }
 
     void update(){
-        if(y==0){
+        if(pos.getY() == 0){
             vcty*=-1;
         }
 
-        if(x==0 || x==width){
+        if(pos.getX() == 0 || pos.getX() == width){
             vctx*=-1;
         }
 
-        x=x+vctx*vx;
-        y=y+vcty*vy;
+        pos.move(vctx*vx, vcty*vy);
     }
 
     void restore(){
@@ -42,6 +40,6 @@ class Ball{
 
     void show(){
         fill(255);
-        ellipse(x, y, xl, yl);
+        ellipse(pos.getX(), pos.getY(), radius, radius);
     }
 }
