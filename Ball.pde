@@ -48,10 +48,6 @@ class Ball {
             || this.centre.getX() == width;
     }
 
-    private boolean isTouchingBlock(Block block) {
-        return false;
-    }
-
     void update() {
         if (isTouchingSideBorders()) {
             changeWayX();
@@ -64,13 +60,8 @@ class Ball {
 
     void update(Line line) {
         if (isTouchingLine(line)) {
-            vcty *= -1;
+            changeWayY();
         }
-        update();
-    }
-
-    void update(Block block) {
-
         update();
     }
 

@@ -3,16 +3,13 @@ class Block {
     Point pos, endPos;
 
     // Rectangle Coordinates
-    Point upleft, upright, downleft, downright;
+    Coordinate upleft, upright, downleft, downright;
 
     //
     float w = 100;
     float h = 30;
     color c;
     boolean alive = true;
-
-
-
 
     Block(int i, int j) {
         initPos(i, j);

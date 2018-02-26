@@ -5,7 +5,7 @@ class Line {
     Point pos;
     Point endPos;
     private float w, h;
-    private float velocity = 20;
+    private float velocity = 35;
 
 
     Line(){

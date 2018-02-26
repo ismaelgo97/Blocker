@@ -185,9 +185,6 @@ class Block {
     int c;
     boolean alive = true;
 
-
-
-
     Block(int i, int j) {
         initPos(i, j);
         c = color(random(1, 255), random(1, 255), random(1, 255));
@@ -310,7 +307,7 @@ class Line {
     Point pos;
     Point endPos;
     private float w, h;
-    private float velocity = 20;
+    private float velocity = 35;
 
 
     Line(){
