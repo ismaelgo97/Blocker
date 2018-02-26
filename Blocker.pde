@@ -5,12 +5,11 @@ Ball myballs = new Ball();
 boolean gameStarted = false;
 int contador = 0;
 
-Color[] colorScheme = new Color[4]{
-    new Color(255, 0, 0),
-    new Color(0, 255, 0),
-    new Color(0, 0, 255),
-    new Color(255, 255, 0)
-
+Color[] colorScheme = {
+    Colors.Red,
+    Colors.Blue,
+    Colors.Yellow,
+    Colors.Green
 };
 
 void setup(){

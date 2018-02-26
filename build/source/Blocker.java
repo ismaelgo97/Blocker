@@ -14,11 +14,19 @@ import java.io.IOException;
 
 public class Blocker extends PApplet {
 
+
 Block[] blocks = new Block[60];
 Line lit = new Line();
 Ball myballs = new Ball();
 boolean gameStarted = false;
 int contador = 0;
+
+Color[] colorScheme = {
+    Colors.Red,
+    Colors.Blue,
+    Colors.Yellow,
+    Colors.Green
+};
 
 public void setup(){
     
@@ -123,24 +131,30 @@ class Block{
     float posy;
     float ancho=100;
     float alto=30;
-    float r, g, b;
+    Color c;
     boolean alive = true;
 
 
     Block(int i, int j){
         posx=i*100;
         posy=j*30;
-        r=random(1, 255);
-        g=random(1, 255);
-        b=random(1, 255);
+        c = new Color(random(1, 255), random(1, 255), random(1, 255));
     }
 
-    Block(int i, int j, float rr, float gg, float bb){
-        posx=i*100;
-        posy=j*30;
-        r=rr;
-        g=gg;
-        b=bb;
+    Block(int i, int j, float r, float g, float b){
+        posx = i*100;
+        posy = j*30;
+        c = new Color(r, g, b);
+    }
+
+    Block(int i, int j, Color c) {
+        posx = i*100;
+        posy = j*30;
+        this.c = c;
+    }
+
+    public void remove() {
+        r = g = b = 0;
     }
 
     public void update(){
@@ -152,6 +166,27 @@ class Block{
         fill(r,g,b);
         rect(posx, posy, ancho, alto);
     }
+}
+class Color {
+    float r, g, b;
+    Color(float r, float g, float b) {
+        this.r = r; this.g = g; this.b = b;
+    }
+    public float getR() {
+        return r;
+    }
+    public float getG() {
+        return g;
+    }
+    public float getB() {
+        return b;
+    }
+}
+enum Colors {
+    Red(new Color(255, 0, 0)),
+    Blue(new Color(0, 255, 0)),
+    Green(new Color(0, 0, 255)),
+    Yellow(new Color(255, 255, 0))
 }
 class Line{
     float a, b;
@@ -171,9 +206,9 @@ class Line{
 
     public void update(int k){
         switch(k){
-          case 37:if(a>0) a=a-10;
+          case 37: if(a>0) a=a-10;
           break;
-          case 39:if(a<900) a=a+10;
+          case 39: if(a<900) a=a+10;
           break;
           default:
           break;
@@ -183,6 +218,28 @@ class Line{
     public void show(){
         fill(255);
         rect(a, b, 100, 5);
+    }
+}
+class Point {
+    float x, y;
+    Point(float x, float y) {
+        this.x = x; this.y = y;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public float getY() {
+        return x;
+    }
+
+    public void setY(float y) {
+        this.x = x;
     }
 }
   public void settings() {  size(1000, 720); }
