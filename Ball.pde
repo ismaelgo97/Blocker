@@ -2,9 +2,9 @@ class Ball {
     Point centre;
     // float xl, yl;
     private float radius;
-    private float vctx, vcty;
-    int vx = 1;
-    int vy = 1;
+    Vector vector;
+    float vx = 1;
+    float vy = 1;
 
     Ball(){
         restore();
@@ -16,18 +16,8 @@ class Ball {
     }
 
     private void initVector() {
-        vctx = random(4, -4);
-        vcty = -4;
+        vector = new Vector(random(2, -2), -1);
     }
-
-    void changeWayX() {
-        vctx *= -1;
-    }
-
-    void changeWayY() {
-        vcty *= -1;
-    }
-
 
     float getRadius() {
         return radius;
@@ -54,17 +44,17 @@ class Ball {
 
     void update() {
         if (isTouchingSideBorders()) {
-            changeWayX();
+            vector.changeWayX();
         }
         if (isTouchingTopBorder()) {
-            changeWayY();
+            vector.changeWayY();
         }
-        centre.move(vctx*vx, vcty*vy);
+        centre.move(vector.getX()*vx, vector.getY()*vy);
     }
 
     void update(Line line) {
         if (isTouchingLine(line)) {
-            changeWayY();
+            vector.changeWayY();
         }
         update();
     }

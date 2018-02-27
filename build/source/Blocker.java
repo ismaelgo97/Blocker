@@ -20,6 +20,7 @@ Line lit = new Line();
 Ball ball = new Ball();
 
 Player player = new Player("Pepe");
+
 boolean gameStarted = false;
 
 int red = color(255, 0, 0);
@@ -27,23 +28,47 @@ int green = color(0, 255, 0);
 int blue = color(0, 0, 255);
 int yellow = color(255, 255, 0);
 
+int initRow = 3;
+
 public void setup(){
     
+    
     int a = 0;
-    for (int i = 0; i < 2; i++){
+
+    /*
+
+    for (int i = 0; i < 60; i++) {
+        for (int j = 0; j < 10; j++){
+            blocks[a]= new Block(j, i, red);
+            a++;
+        }
+        for (int j = 0; j < 10; j++){
+            blocks[a]= new Block(j, i, red);
+            a++;
+        }
         for (int j = 0; j < 10; j++){
             blocks[a]= new Block(j, i, red);
             a++;
         }
     }
-    for (int i = 2; i < 4; i++){
+
+    */
+
+    for (int i = initRow; i < initRow+2; i++){
+        for (int j = 0; j < 10; j++){
+            blocks[a]= new Block(j, i, red);
+            a++;
+        }
+    }
+
+    for (int i = initRow+2; i < initRow+4; i++){
         for (int j = 0; j < 10; j++){
             blocks[a]= new Block(j, i, green);
             a++;
         }
     }
 
-    for (int i = 4; i < 6; i++){
+    for (int i = initRow+4; i < initRow+6; i++){
         for (int j = 0; j < 10; j++){
             blocks[a]= new Block(j, i, blue);
             a++;
@@ -51,33 +76,31 @@ public void setup(){
     }
 }
 
+public void reset() {
+    ball.restore();
+    lit.restore();
+    gameStarted=false;
+}
 
 public void draw(){
     background(0);
 
     if(gameStarted) {
         ball.update(lit);
-        if(ball.centre.getY() == height){
-            ball.restore();
-            lit.restore();
-            gameStarted=false;
+        if(ball.isTouchingDown()){
+            player.looseLives();
+            reset();
         }
     }
 
     lit.show();
 
     for (int i = 0; i < blocks.length; i++){
-        int cont=0;
         boolean isAlive = blocks[i].isAlive();
-        player.update(isAlive, ball);
         if (isAlive) {
             blocks[i].show();
-            blocks[i].update(ball);
+            blocks[i].update(ball, player);
         }
-        if(!isAlive) {
-            cont++;
-        }
-        text(cont*100, 900, 700);
     }
 
     player.show();
@@ -89,20 +112,23 @@ public void draw(){
 }
 
 public void keyPressed() {
-    if(gameStarted) {
-        lit.update(keyCode);
-    }
-    if(key==32) {
-        gameStarted=true;
+    if (!player.lost()) {
+        if(key==32) {
+            reset();
+            gameStarted=true;
+        }
+        if(gameStarted) {
+            lit.update(keyCode);
+        }
     }
 }
 class Ball {
     Point centre;
     // float xl, yl;
     private float radius;
-    private float vctx, vcty;
-    int vx = 1;
-    int vy = 1;
+    Vector vector;
+    float vx = 1;
+    float vy = 1;
 
     Ball(){
         restore();
@@ -114,18 +140,8 @@ class Ball {
     }
 
     private void initVector() {
-        vctx = random(4, -4);
-        vcty = -4;
+        vector = new Vector(random(2, -2), -1);
     }
-
-    public void changeWayX() {
-        vctx *= -1;
-    }
-
-    public void changeWayY() {
-        vcty *= -1;
-    }
-
 
     public float getRadius() {
         return radius;
@@ -146,19 +162,23 @@ class Ball {
             || this.centre.getX() == width;
     }
 
+    public boolean isTouchingDown() {
+        return this.centre.getY() == height;
+    }
+
     public void update() {
         if (isTouchingSideBorders()) {
-            changeWayX();
+            vector.changeWayX();
         }
         if (isTouchingTopBorder()) {
-            changeWayY();
+            vector.changeWayY();
         }
-        centre.move(vctx*vx, vcty*vy);
+        centre.move(vector.getX()*vx, vector.getY()*vy);
     }
 
     public void update(Line line) {
         if (isTouchingLine(line)) {
-            changeWayY();
+            vector.changeWayY();
         }
         update();
     }
@@ -236,10 +256,10 @@ class Block {
     private boolean isTouched(Ball ball) {
         boolean touched = false;
         if (isTop(ball) || isBottom(ball)) {
-            ball.changeWayY();
+            ball.vector.changeWayY();
             touched = true;
         } else if (isLeft(ball) || isRight(ball)) {
-            ball.changeWayX();
+            ball.vector.changeWayX();
             touched = true;
         }
         return touched;
@@ -249,8 +269,11 @@ class Block {
         return alive;
     }
 
-    public void update(Ball ball){
+
+
+    public void update(Ball ball, Player player){
         if (isTouched(ball)) {
+            player.addPoints();
             alive = false;
         }
     }
@@ -302,7 +325,6 @@ class Line {
     private float w, h;
     private float velocity = 35;
 
-
     Line(){
         restore();
     }
@@ -348,8 +370,8 @@ class Line {
 }
 class Player {
     String name;
-    float score;
-    float lives;
+    private float score;
+    private byte lives;
 
     Player(String s){
         name=s;
@@ -358,21 +380,26 @@ class Player {
     }
 
     public void show(){
-        text(name+" : "+score, width-80, height-40);
-        text("lives: "+lives, width-80, height-30);
+        fill(255);
+        text(name+" : " +score, width-80, height-40);
+        text("lives: " + lives, width-80, height-30);
     }
 
     public boolean lost(){
         return lives==0;
     }
 
-    public void update(boolean isAlive, Ball ball){
-        if (!isAlive) {
-            score += 100;
-        }
-        if (ball.centre.getX()==height){
-            lives-=1;
-        }
+    public void looseLives() {
+        if (lives > 0)
+            lives -= 1;
+    }
+
+    public void addPoints() {
+        addPoints(100);
+    }
+
+    public void addPoints(float points) {
+        score += points;
     }
 }
 class Point extends Coordinate {
@@ -380,7 +407,28 @@ class Point extends Coordinate {
         super(x, y);
     }
 }
-  public void settings() {  size(1000, 720); }
+class Vector extends Coordinate {
+    Vector(float x, float y) {
+        super(x, y);
+    }
+
+    Vector(Point a, Point b) {
+        super(b.getX() - a.getX(), b.getY() - a.getY());
+    }
+
+    Vector(Point o, float angle, float modulus) {
+        super((modulus * cos(angle)) - o.getX(), (modulus * sin(angle)) - o.getY());
+    }
+
+    public void changeWayX() {
+        setX(getX() * -1);
+    }
+
+    public void changeWayY() {
+        setY(getY() * -1);
+    }
+}
+  public void settings() {  size(1000, 720);  smooth(2); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "Blocker" };
     if (passedArgs != null) {

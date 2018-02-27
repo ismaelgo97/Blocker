@@ -4,6 +4,7 @@ Line lit = new Line();
 Ball ball = new Ball();
 
 Player player = new Player("Pepe");
+
 boolean gameStarted = false;
 
 color red = color(255, 0, 0);
@@ -11,8 +12,11 @@ color green = color(0, 255, 0);
 color blue = color(0, 0, 255);
 color yellow = color(255, 255, 0);
 
+int initRow = 3;
+
 void setup(){
     size(1000, 720);
+    smooth(2);
     int a = 0;
 
     /*
@@ -34,21 +38,21 @@ void setup(){
 
     */
 
-    for (int i = 0; i < 2; i++){
+    for (int i = initRow; i < initRow+2; i++){
         for (int j = 0; j < 10; j++){
             blocks[a]= new Block(j, i, red);
             a++;
         }
     }
-    
-    for (int i = 2; i < 4; i++){
+
+    for (int i = initRow+2; i < initRow+4; i++){
         for (int j = 0; j < 10; j++){
             blocks[a]= new Block(j, i, green);
             a++;
         }
     }
 
-    for (int i = 4; i < 6; i++){
+    for (int i = initRow+4; i < initRow+6; i++){
         for (int j = 0; j < 10; j++){
             blocks[a]= new Block(j, i, blue);
             a++;
@@ -56,6 +60,11 @@ void setup(){
     }
 }
 
+void reset() {
+    ball.restore();
+    lit.restore();
+    gameStarted=false;
+}
 
 void draw(){
     background(0);
@@ -63,26 +72,19 @@ void draw(){
     if(gameStarted) {
         ball.update(lit);
         if(ball.isTouchingDown()){
-            ball.restore();
-            lit.restore();
-            gameStarted=false;
+            player.looseLives();
+            reset();
         }
     }
 
     lit.show();
 
     for (int i = 0; i < blocks.length; i++){
-        int cont=0;
         boolean isAlive = blocks[i].isAlive();
-        player.update(isAlive, ball);
         if (isAlive) {
             blocks[i].show();
-            blocks[i].update(ball);
+            blocks[i].update(ball, player);
         }
-        if(!isAlive) {
-            cont++;
-        }
-        text(cont*100, 900, 700);
     }
 
     player.show();
@@ -94,10 +96,13 @@ void draw(){
 }
 
 void keyPressed() {
-    if(gameStarted) {
-        lit.update(keyCode);
-    }
-    if(key==32) {
-        gameStarted=true;
+    if (!player.lost()) {
+        if(key==32) {
+            reset();
+            gameStarted=true;
+        }
+        if(gameStarted) {
+            lit.update(keyCode);
+        }
     }
 }

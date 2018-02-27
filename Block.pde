@@ -60,10 +60,10 @@ class Block {
     private boolean isTouched(Ball ball) {
         boolean touched = false;
         if (isTop(ball) || isBottom(ball)) {
-            ball.changeWayY();
+            ball.vector.changeWayY();
             touched = true;
         } else if (isLeft(ball) || isRight(ball)) {
-            ball.changeWayX();
+            ball.vector.changeWayX();
             touched = true;
         }
         return touched;
@@ -73,8 +73,11 @@ class Block {
         return alive;
     }
 
-    void update(Ball ball){
+
+
+    void update(Ball ball, Player player){
         if (isTouched(ball)) {
+            player.addPoints();
             alive = false;
         }
     }

@@ -1,7 +1,7 @@
 class Player {
     String name;
-    float score;
-    float lives;
+    private float score;
+    private byte lives;
 
     Player(String s){
         name=s;
@@ -10,6 +10,7 @@ class Player {
     }
 
     void show(){
+        fill(255);
         text(name+" : " +score, width-80, height-40);
         text("lives: " + lives, width-80, height-30);
     }
@@ -18,12 +19,16 @@ class Player {
         return lives==0;
     }
 
-    void update(boolean isAlive, Ball ball){
-        if (!isAlive) {
-            score += 100;
-        }
-        if (ball.isTouchingDown()){
-            lives-=1;
-        }
+    void looseLives() {
+        if (lives > 0)
+            lives -= 1;
+    }
+
+    void addPoints() {
+        addPoints(100);
+    }
+
+    void addPoints(float points) {
+        score += points;
     }
 }
