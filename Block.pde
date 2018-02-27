@@ -1,13 +1,13 @@
 class Block {
     // Rectangle position;
-    Point pos, endPos;
+    Point centre;
 
-    // Rectangle Coordinates
-    Point upleft, upright, downleft, downright;
+    Vector corner, vertical, horizontal;
 
     //
-    float w = 100;
-    float h = 30;
+    final float w = 100;
+    final float h = 30;
+
     color c;
     boolean alive = true;
 
@@ -27,34 +27,56 @@ class Block {
     }
 
     void initPos(int i, int j) {
-        pos = upleft = new Point(i * w, j * h);
-        endPos = upright = new Point(pos.getX() + w, pos.getY());
-        downleft  = new Point(pos.getX()    , pos.getY() + h);
-        downright = new Point(pos.getX() + w, pos.getY() + h);
+        centre = new Point(i * w + w/2, j * h);
+        float x = centre.getX();
+        float y = centre.getY();
+
+        corner      = new Vector(centre, new Point(x + distFromCentre(w), y + distFromCentre(h)));
+        horizontal  = new Vector(centre, new Point(x + w, y));
+        vertical    = new Vector(centre, new Point(x, y + h));
+    }
+
+    float distFromCentre(float d) {
+        return d/2;
     }
 
     boolean isTop(Ball ball) {
-        return (ball.centre.getX() > upleft.getX() &&
-                ball.centre.getX() < upright.getX())
-            && (ball.centre.getY() + ball.getRadius() == upleft.getY());
+
+        float d = new Vector(ball.centre, centre).getLength() + ball.getRadius();
+        return d <= corner.getLength();
+
+        // return (ball.centre.getX() >= upleft.getX() &&
+        //         ball.centre.getX() <= upright.getX())
+        //     && (ball.centre.getY() + ball.getRadius() == upleft.getY());
     }
 
     boolean isBottom(Ball ball) {
-        return (ball.centre.getX() > downleft.getX() &&
-                ball.centre.getX() < downright.getX())
-            && (ball.centre.getY() - ball.getRadius() == downleft.getY());
+
+        float d = new Vector(ball.centre, centre).getLength() + ball.getRadius();
+        return d <= corner.getLength();
+        // return (ball.centre.getX() >= downleft.getX() &&
+        //         ball.centre.getX() <= downright.getX())
+        //     && (ball.centre.getY() - ball.getRadius() == downleft.getY());
     }
 
     boolean isRight(Ball ball) {
-        return (ball.centre.getY() - ball.getRadius() >   upright.getY() &&
-                ball.centre.getY() - ball.getRadius() < downright.getY())
-            && (ball.centre.getX() == upright.getX());
+
+        float d = new Vector(ball.centre, centre).getLength() + ball.getRadius();
+        return d <= corner.getLength();
+
+        // return (ball.centre.getY() - ball.getRadius() >=   upright.getY() &&
+        //         ball.centre.getY() - ball.getRadius() <= downright.getY())
+        //     && (ball.centre.getX() == upright.getX());
     }
 
     boolean isLeft(Ball ball) {
-        return (ball.centre.getY() + ball.getRadius() >   upleft.getY() &&
-                ball.centre.getY() + ball.getRadius() < downleft.getY())
-            && (ball.centre.getX() == upleft.getX());
+
+        float d = new Vector(ball.centre, centre).getLength() + ball.getRadius();
+        return d <= corner.getLength();
+
+        // return (ball.centre.getY() + ball.getRadius() >=   upleft.getY() &&
+        //         ball.centre.getY() + ball.getRadius() <= downleft.getY())
+        //     && (ball.centre.getX() == upleft.getX());
    }
 
     private boolean isTouched(Ball ball) {
@@ -73,8 +95,6 @@ class Block {
         return alive;
     }
 
-
-
     void update(Ball ball, Player player){
         if (isTouched(ball)) {
             player.addPoints();
@@ -84,6 +104,7 @@ class Block {
 
     void show(){
         fill(c);
-        rect(pos.getX(), pos.getY(), w, h);
+        rectMode(CENTER);
+        rect(centre.getX(), centre.getY(), w, h);
     }
 }

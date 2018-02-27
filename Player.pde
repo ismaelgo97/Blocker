@@ -6,7 +6,7 @@ class Player {
     Player(String s){
         name=s;
         score=0;
-        lives=3;
+        lives=30;
     }
 
     void show(){

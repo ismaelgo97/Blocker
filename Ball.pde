@@ -1,7 +1,7 @@
 class Ball {
     Point centre;
     // float xl, yl;
-    private float diametre;
+    private float diameter;
     Vector vector;
     float vx = 1;
     float vy = 1;
@@ -11,22 +11,25 @@ class Ball {
     }
 
     private void initPos() {
-        diametre = 15;
+        diameter = 15;
         centre = new Point(500, 640);
     }
 
     private void initVector() {
-        vector = new Vector(random(6, -6), -6);
+        vector = new Vector(random(4, -4), -4);
     }
 
     float getRadius() {
-        return diametre/2;
+        return diameter/2;
     }
 
     private boolean isTouchingLine(Line line) {
+        // float p = new Vector(centre, line.pos).getLength() + getRadius();
+        // float e = new Vector(centre, line.endPos).getLength() + getRadius();
+        // return p;
         return this.centre.getX() - getRadius() > line.pos.getX()
             && this.centre.getX() + getRadius() < line.endPos.getX()
-            && this.centre.getY() + getRadius() > line.pos.getY();
+            && this.centre.getY() == line.pos.getY();
     }
 
     private boolean isTouchingTopBorder() {
@@ -67,6 +70,6 @@ class Ball {
     void show(){
         fill(255);
         ellipseMode(CENTER);
-        ellipse(centre.getX(), centre.getY(), diametre, diametre);
+        ellipse(centre.getX(), centre.getY(), diameter, diameter);
     }
 }

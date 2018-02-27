@@ -70,6 +70,8 @@ void draw(){
     background(0);
 
     if(gameStarted) {
+        // Only if you want to use mouse
+        // lit.update();
         ball.update(lit);
         if(ball.isTouchingDown()){
             player.looseLives();

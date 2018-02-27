@@ -1,6 +1,7 @@
 class Line {
     Point pos;
     Point endPos;
+    Point centre;
     private float w, h;
     private float velocity = 35;
 
@@ -13,13 +14,21 @@ class Line {
     }
 
     private void initPos() {
-        pos = new Point(450, 655);
-        endPos = new Point(pos.getX() + w, pos.getY());
+        centre = new Point(width/2, 655);
+        pos = new Point(centre.getX() - w/2, centre.getX());
+        endPos = new Point(centre.getX() + w/2, centre.getY());
     }
 
     private void move(float x) {
+        centre.moveX(x);
         pos.moveX(x);
         endPos.moveX(x);
+    }
+
+    private void moveTo(float x) {
+        centre.setX(x);
+        pos.setX(x);
+        endPos.setX(x + w);
     }
 
     void restore() {
@@ -29,6 +38,10 @@ class Line {
 
     float getWidth() {
         return w;
+    }
+
+    float getHeight() {
+        return h;
     }
 
     void update(int k){
@@ -42,8 +55,13 @@ class Line {
         }
     }
 
+    void update() {
+        if (pos.getX() > 0 && pos.getX() < width - w) moveTo(mouseX);
+    }
+
     void show(){
         fill(255);
-        rect(pos.getX(), pos.getY(), w, h);
+        rectMode(CENTER);
+        rect(centre.getX(), centre.getY(), w, h);
     }
 }
