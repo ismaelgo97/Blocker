@@ -36,24 +36,24 @@ class Block {
     boolean isTop(Ball ball) {
         return (ball.centre.getX() > upleft.getX() &&
                 ball.centre.getX() < upright.getX())
-            && (ball.centre.getY() == upleft.getY());
+            && (ball.centre.getY() + ball.getRadius() == upleft.getY());
     }
 
     boolean isBottom(Ball ball) {
         return (ball.centre.getX() > downleft.getX() &&
                 ball.centre.getX() < downright.getX())
-            && (ball.centre.getY() == downleft.getY());
+            && (ball.centre.getY() - ball.getRadius() == downleft.getY());
     }
 
     boolean isRight(Ball ball) {
-        return (ball.centre.getY() >   upright.getY() &&
-                ball.centre.getY() < downright.getY())
+        return (ball.centre.getY() - ball.getRadius() >   upright.getY() &&
+                ball.centre.getY() - ball.getRadius() < downright.getY())
             && (ball.centre.getX() == upright.getX());
     }
 
     boolean isLeft(Ball ball) {
-        return (ball.centre.getY() >   upleft.getY() &&
-                ball.centre.getY() < downleft.getY())
+        return (ball.centre.getY() + ball.getRadius() >   upleft.getY() &&
+                ball.centre.getY() + ball.getRadius() < downleft.getY())
             && (ball.centre.getX() == upleft.getX());
    }
 
