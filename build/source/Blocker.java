@@ -15,11 +15,10 @@ import java.io.IOException;
 public class Blocker extends PApplet {
 
 
-Block[] blocks = new Block[60];
-Line lit = new Line();
-Ball ball = new Ball();
-
-Player player = new Player("Pepe");
+Block[] blocks;
+Line lit;
+Ball ball;
+Player player;
 
 boolean gameStarted = false;
 
@@ -33,6 +32,12 @@ int initRow = 3;
 public void setup(){
     
     
+
+    blocks = new Block[60];
+    lit = new Line();
+    ball = new Ball();
+    player = new Player("Pepe");
+
     int a = 0;
 
     /*
@@ -153,9 +158,9 @@ class Ball {
         // float p = new Vector(centre, line.pos).getLength() + getRadius();
         // float e = new Vector(centre, line.endPos).getLength() + getRadius();
         // return p;
-        return this.centre.getX() - getRadius() > line.pos.getX()
-            && this.centre.getX() + getRadius() < line.endPos.getX()
-            && this.centre.getY() == line.pos.getY();
+        return this.centre.getX() >= line.pos.getX()
+            && this.centre.getX() <= line.endPos.getX()
+            && this.centre.getY() + getRadius() >= line.centre.getY();
     }
 
     private boolean isTouchingTopBorder() {
@@ -361,7 +366,7 @@ class Line {
     }
 
     private void initPos() {
-        centre = new Point(width/2, 655);
+        centre = new Point(width/2, height - 65);
         pos = new Point(centre.getX() - w/2, centre.getX());
         endPos = new Point(centre.getX() + w/2, centre.getY());
     }
@@ -425,12 +430,12 @@ class Player {
 
     public void show(){
         fill(255);
-        text(name+" : " +score, width-80, height-40);
+        text(name + " : " + score, width-80, height-40);
         text("lives: " + lives, width-80, height-30);
     }
 
     public boolean lost(){
-        return lives==0;
+        return lives == 0;
     }
 
     public void looseLives() {
@@ -452,7 +457,12 @@ class Point extends Coordinate {
     }
 
     public float distance(Point b) {
-        return sqrt(pow(b.getX() - this.getX(), 2) + pow(b.getY() - this.getY(), 2));
+        return sqrt(
+            (b.getX() - this.getX())
+          * (b.getX() - this.getX())
+          + (b.getY() - this.getY())
+          * (b.getY() - this.getY())
+        );
     }
 }
 class Vector extends Coordinate {

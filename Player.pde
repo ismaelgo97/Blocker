@@ -11,12 +11,12 @@ class Player {
 
     void show(){
         fill(255);
-        text(name+" : " +score, width-80, height-40);
+        text(name + " : " + score, width-80, height-40);
         text("lives: " + lives, width-80, height-30);
     }
 
     boolean lost(){
-        return lives==0;
+        return lives == 0;
     }
 
     void looseLives() {

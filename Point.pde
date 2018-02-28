@@ -4,6 +4,11 @@ class Point extends Coordinate {
     }
 
     float distance(Point b) {
-        return sqrt(pow(b.getX() - this.getX(), 2) + pow(b.getY() - this.getY(), 2));
+        return sqrt(
+            (b.getX() - this.getX())
+          * (b.getX() - this.getX())
+          + (b.getY() - this.getY())
+          * (b.getY() - this.getY())
+        );
     }
 }

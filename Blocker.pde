@@ -1,9 +1,8 @@
 
-Block[] blocks = new Block[60];
-Line lit = new Line();
-Ball ball = new Ball();
-
-Player player = new Player("Pepe");
+Block[] blocks;
+Line lit;
+Ball ball;
+Player player;
 
 boolean gameStarted = false;
 
@@ -17,6 +16,12 @@ int initRow = 3;
 void setup(){
     size(1000, 720);
     smooth(2);
+
+    blocks = new Block[60];
+    lit = new Line();
+    ball = new Ball();
+    player = new Player("Pepe");
+
     int a = 0;
 
     /*

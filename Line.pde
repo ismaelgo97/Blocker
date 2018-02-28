@@ -14,7 +14,7 @@ class Line {
     }
 
     private void initPos() {
-        centre = new Point(width/2, 655);
+        centre = new Point(width/2, height - 65);
         pos = new Point(centre.getX() - w/2, centre.getX());
         endPos = new Point(centre.getX() + w/2, centre.getY());
     }

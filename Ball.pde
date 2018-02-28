@@ -27,9 +27,9 @@ class Ball {
         // float p = new Vector(centre, line.pos).getLength() + getRadius();
         // float e = new Vector(centre, line.endPos).getLength() + getRadius();
         // return p;
-        return this.centre.getX() - getRadius() > line.pos.getX()
-            && this.centre.getX() + getRadius() < line.endPos.getX()
-            && this.centre.getY() == line.pos.getY();
+        return this.centre.getX() >= line.pos.getX()
+            && this.centre.getX() <= line.endPos.getX()
+            && this.centre.getY() + getRadius() >= line.centre.getY();
     }
 
     private boolean isTouchingTopBorder() {
