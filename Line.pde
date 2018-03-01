@@ -1,67 +1,65 @@
-class Line {
-    Point pos;
-    Point endPos;
-    Point centre;
-    private float w, h;
+class Line extends Point {
+
+    HitBox hb;
     private float velocity = 35;
 
-    Line(){
+    Line() {
+        super(width/2, height - 65);
+        hb = new HitBox(100, 5, this);
         restore();
     }
 
-    private void defaultSize() {
-        w = 100; h = 5;
-    }
-
     private void initPos() {
-        centre = new Point(width/2, height - 65);
-        pos = new Point(centre.getX() - w/2, centre.getX());
-        endPos = new Point(centre.getX() + w/2, centre.getY());
+        setX(width/2); setY(height - 65);
+        hb.update(this);
     }
 
     private void move(float x) {
-        centre.moveX(x);
-        pos.moveX(x);
-        endPos.moveX(x);
+        moveX(x);
     }
 
     private void moveTo(float x) {
-        centre.setX(x);
-        pos.setX(x);
-        endPos.setX(x + w);
+        setX(x);
     }
 
     void restore() {
-        defaultSize();
         initPos();
     }
 
     float getWidth() {
-        return w;
+        return hb.getWidth();
     }
 
     float getHeight() {
-        return h;
+        return hb.getHeight();
     }
 
     void update(int k){
         switch(k){
-          case 37: if(pos.getX() > 0) move(-1*velocity);
+          case 37:
+          if(hb.upleft.getX() > 0)
+            move(-1*velocity);
           break;
-          case 39: if(pos.getX() < width - w) move(velocity);
+          case 39:
+          if(hb.upright.getX() < width)
+            move(velocity);
           break;
           default:
           break;
         }
+        hb.update(this);
     }
 
     void update() {
-        if (pos.getX() > 0 && pos.getX() < width - w) moveTo(mouseX);
+        if (getX() > 0 + hb.getWidth()/2 && getX() < width - hb.getWidth()/2)
+            moveTo(mouseX);
+
+        hb.update(this);
     }
 
     void show(){
         fill(255);
         rectMode(CENTER);
-        rect(centre.getX(), centre.getY(), w, h);
+        rect(getX(), getY(), getWidth(), getHeight());
     }
 }

@@ -45,22 +45,19 @@ void setup(){
 
     for (int i = initRow; i < initRow+2; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, red);
-            a++;
+            blocks[a++]= new Block(j, i, 100, 30, red);
         }
     }
 
     for (int i = initRow+2; i < initRow+4; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, green);
-            a++;
+            blocks[a++]= new Block(j, i, 100, 30, green);
         }
     }
 
     for (int i = initRow+4; i < initRow+6; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, blue);
-            a++;
+            blocks[a++]= new Block(j, i, 100, 30, blue);
         }
     }
 }
@@ -105,11 +102,14 @@ void draw(){
 void keyPressed() {
     if (!player.lost()) {
         if(key==32) {
-            reset();
             gameStarted=true;
         }
         if(gameStarted) {
             lit.update(keyCode);
+        }
+    } else {
+        if(key==32) {
+            reset();
         }
     }
 }

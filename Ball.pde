@@ -1,48 +1,51 @@
-class Ball {
-    Point centre;
-    // float xl, yl;
-    private float diameter;
+class Ball extends Point {
+
+    HitBox hb;
     Vector vector;
+
+    private final float diameter = 15;
+
     float vx = 1;
     float vy = 1;
 
-    Ball(){
+    Ball() {
+        super(width/2, height - 80);
+        hb = new HitBox(diameter, diameter, this);
         restore();
     }
 
     private void initPos() {
-        diameter = 15;
-        centre = new Point(500, 640);
+        setX(width/2); setY(height - 80);
     }
 
     private void initVector() {
-        vector = new Vector(random(4, -4), -4);
+        vector = new Vector(random(6, -6), -4);
     }
 
     float getRadius() {
-        return diameter/2;
+        return diameter / 2;
     }
 
     private boolean isTouchingLine(Line line) {
         // float p = new Vector(centre, line.pos).getLength() + getRadius();
         // float e = new Vector(centre, line.endPos).getLength() + getRadius();
         // return p;
-        return this.centre.getX() >= line.pos.getX()
-            && this.centre.getX() <= line.endPos.getX()
-            && this.centre.getY() + getRadius() >= line.centre.getY();
+        return getX() >= line.hb.upleft.getX()
+            && getX() <= line.hb.upright.getX()
+            && getY() + getRadius() >= line.getY() - line.getHeight();
     }
 
     private boolean isTouchingTopBorder() {
-        return this.centre.getY() <= 0;
+        return getY() - getRadius() <= 0;
     }
 
     private boolean isTouchingSideBorders() {
-        return this.centre.getX() <= 0
-            || this.centre.getX() >= width;
+        return getX() - getRadius() <= 0
+            || getX() + getRadius() >= width;
     }
 
     boolean isTouchingDown() {
-        return this.centre.getY() >= height;
+        return getY() + getRadius() >= height;
     }
 
     void update() {
@@ -52,7 +55,8 @@ class Ball {
         if (isTouchingTopBorder()) {
             vector.changeWayY();
         }
-        centre.move(vector.getX()*vx, vector.getY()*vy);
+        move(vector.getX()*vx, vector.getY()*vy);
+        hb.update(this);
     }
 
     void update(Line line) {
@@ -70,6 +74,6 @@ class Ball {
     void show(){
         fill(255);
         ellipseMode(CENTER);
-        ellipse(centre.getX(), centre.getY(), diameter, diameter);
+        ellipse(getX(), getY(), diameter, diameter);
     }
 }

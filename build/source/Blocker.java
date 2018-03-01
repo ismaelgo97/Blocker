@@ -61,22 +61,19 @@ public void setup(){
 
     for (int i = initRow; i < initRow+2; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, red);
-            a++;
+            blocks[a++]= new Block(j, i, 100, 30, red);
         }
     }
 
     for (int i = initRow+2; i < initRow+4; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, green);
-            a++;
+            blocks[a++]= new Block(j, i, 100, 30, green);
         }
     }
 
     for (int i = initRow+4; i < initRow+6; i++){
         for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, blue);
-            a++;
+            blocks[a++]= new Block(j, i, 100, 30, blue);
         }
     }
 }
@@ -121,59 +118,65 @@ public void draw(){
 public void keyPressed() {
     if (!player.lost()) {
         if(key==32) {
-            reset();
             gameStarted=true;
         }
         if(gameStarted) {
             lit.update(keyCode);
         }
+    } else {
+        if(key==32) {
+            reset();
+        }
     }
 }
-class Ball {
-    Point centre;
-    // float xl, yl;
-    private float diameter;
+class Ball extends Point {
+
+    HitBox hb;
     Vector vector;
+
+    private final float diameter = 15;
+
     float vx = 1;
     float vy = 1;
 
-    Ball(){
+    Ball() {
+        super(width/2, height - 80);
+        hb = new HitBox(diameter, diameter, this);
         restore();
     }
 
     private void initPos() {
-        diameter = 15;
-        centre = new Point(500, 640);
+        setX(width/2); setY(height - 80);
     }
 
     private void initVector() {
-        vector = new Vector(random(4, -4), -4);
+        vector = new Vector(random(6, -6), -4);
     }
 
     public float getRadius() {
-        return diameter/2;
+        return diameter / 2;
     }
 
     private boolean isTouchingLine(Line line) {
         // float p = new Vector(centre, line.pos).getLength() + getRadius();
         // float e = new Vector(centre, line.endPos).getLength() + getRadius();
         // return p;
-        return this.centre.getX() >= line.pos.getX()
-            && this.centre.getX() <= line.endPos.getX()
-            && this.centre.getY() + getRadius() >= line.centre.getY();
+        return getX() >= line.hb.upleft.getX()
+            && getX() <= line.hb.upright.getX()
+            && getY() + getRadius() >= line.getY() - line.getHeight();
     }
 
     private boolean isTouchingTopBorder() {
-        return this.centre.getY() <= 0;
+        return getY() - getRadius() <= 0;
     }
 
     private boolean isTouchingSideBorders() {
-        return this.centre.getX() <= 0
-            || this.centre.getX() >= width;
+        return getX() - getRadius() <= 0
+            || getX() + getRadius() >= width;
     }
 
     public boolean isTouchingDown() {
-        return this.centre.getY() >= height;
+        return getY() + getRadius() >= height;
     }
 
     public void update() {
@@ -183,7 +186,8 @@ class Ball {
         if (isTouchingTopBorder()) {
             vector.changeWayY();
         }
-        centre.move(vector.getX()*vx, vector.getY()*vy);
+        move(vector.getX()*vx, vector.getY()*vy);
+        hb.update(this);
     }
 
     public void update(Line line) {
@@ -201,55 +205,39 @@ class Ball {
     public void show(){
         fill(255);
         ellipseMode(CENTER);
-        ellipse(centre.getX(), centre.getY(), diameter, diameter);
+        ellipse(getX(), getY(), diameter, diameter);
     }
 }
-class Block {
-    // Rectangle position;
-    Point centre;
+class Block extends Point {
 
-    Vector corner, vertical, horizontal;
-
-    //
-    final float w = 100;
-    final float h = 30;
-
+    HitBox hb;
     int c;
     boolean alive = true;
 
-    Block(int i, int j) {
-        initPos(i, j);
+    Block(int i, int j, float w, float h) {
+        super(i * w + w/2, j * h);
+        hb = new HitBox(w, h, this);
         c = color(random(1, 255), random(1, 255), random(1, 255));
     }
 
-    Block(int i, int j, float r, float g, float b){
-        initPos(i, j);
+    Block(int i, int j, float w, float h, float r, float g, float b){
+        super(i * w + w/2, j * h);
+        hb = new HitBox(w, h, this);
         c = color(r, g, b);
     }
 
-    Block(int i, int j, int c) {
-        initPos(i, j);
+    Block(int i, int j, float w, float h, int c) {
+        super(i * w + w/2, j * h);
+        hb = new HitBox(w, h, this);
         this.c = c;
     }
 
-    public void initPos(int i, int j) {
-        centre = new Point(i * w + w/2, j * h);
-        float x = centre.getX();
-        float y = centre.getY();
-
-        corner      = new Vector(centre, new Point(x + distFromCentre(w), y + distFromCentre(h)));
-        horizontal  = new Vector(centre, new Point(x + w, y));
-        vertical    = new Vector(centre, new Point(x, y + h));
-    }
-
-    public float distFromCentre(float d) {
-        return d/2;
+    public float getDistanceFrom(Ball ball) {
+        return hb.getDistance(ball.hb) - ball.hb.getWidth()/2;
     }
 
     public boolean isTop(Ball ball) {
-
-        float d = new Vector(ball.centre, centre).getLength() + ball.getRadius();
-        return d <= corner.getLength();
+        return getDistanceFrom(ball) <= hb.vertical.getLength();
 
         // return (ball.centre.getX() >= upleft.getX() &&
         //         ball.centre.getX() <= upright.getX())
@@ -257,18 +245,17 @@ class Block {
     }
 
     public boolean isBottom(Ball ball) {
-
-        float d = new Vector(ball.centre, centre).getLength() + ball.getRadius();
-        return d <= corner.getLength();
+        return getDistanceFrom(ball) <= hb.vertical.getLength();
         // return (ball.centre.getX() >= downleft.getX() &&
         //         ball.centre.getX() <= downright.getX())
         //     && (ball.centre.getY() - ball.getRadius() == downleft.getY());
     }
 
     public boolean isRight(Ball ball) {
-
-        float d = new Vector(ball.centre, centre).getLength() + ball.getRadius();
-        return d <= corner.getLength();
+        // System.out.println(getDistanceFrom(ball) + " " + hb.horizontal.getLength());
+        return getDistanceFrom(ball) <= hb.horizontal.getLength();
+        // && (ball.centre.getY() - ball.getRadius() >=   upright.getY() &&
+        //     ball.centre.getY() - ball.getRadius() <= downright.getY());
 
         // return (ball.centre.getY() - ball.getRadius() >=   upright.getY() &&
         //         ball.centre.getY() - ball.getRadius() <= downright.getY())
@@ -276,16 +263,16 @@ class Block {
     }
 
     public boolean isLeft(Ball ball) {
-
-        float d = new Vector(ball.centre, centre).getLength() + ball.getRadius();
-        return d <= corner.getLength();
+        return getDistanceFrom(ball) <= hb.horizontal.getLength();
+        // && (ball.centre.getY() + ball.getRadius() >=   upleft.getY() &&
+        //     ball.centre.getY() + ball.getRadius() <= downleft.getY());
 
         // return (ball.centre.getY() + ball.getRadius() >=   upleft.getY() &&
         //         ball.centre.getY() + ball.getRadius() <= downleft.getY())
         //     && (ball.centre.getX() == upleft.getX());
    }
 
-    private boolean isTouched(Ball ball) {
+    private boolean isTouchedBy(Ball ball) {
         boolean touched = false;
         if (isTop(ball) || isBottom(ball)) {
             ball.vector.changeWayY();
@@ -302,7 +289,7 @@ class Block {
     }
 
     public void update(Ball ball, Player player){
-        if (isTouched(ball)) {
+        if (isTouchedBy(ball)) {
             player.addPoints();
             alive = false;
         }
@@ -311,7 +298,7 @@ class Block {
     public void show(){
         fill(c);
         rectMode(CENTER);
-        rect(centre.getX(), centre.getY(), w, h);
+        rect(getX(), getY(), hb.getWidth(), hb.getHeight());
     }
 }
 class Coordinate {
@@ -350,42 +337,56 @@ class Coordinate {
         moveY(y);
     }
 }
-class Line {
-    Point pos;
-    Point endPos;
+class HitBox {
+    private Point up, down, left, right;
+    Point upleft, upright, downleft, downright;
+
     Point centre;
+
+    private Vector corner, vertical, horizontal;
+
     private float w, h;
-    private float velocity = 35;
 
-    Line(){
-        restore();
+    HitBox(float w, float h, Point centre) {
+        setWidth(w);
+        setHeight(h);
+        update(centre);
     }
 
-    private void defaultSize() {
-        w = 100; h = 5;
+    private void setPoints() {
+        up      = new Point(
+            centre.getX(), centre.getY() - getHeight()/2
+        );
+        down    = new Point(
+            centre.getX(), centre.getY() + getHeight()/2
+        );
+        left    = new Point(
+            centre.getX() - getWidth()/2, centre.getY()
+        );
+        right   = new Point(
+            centre.getX() + getWidth()/2, centre.getY()
+        );
+
+        // ------------------ //
+        upleft      = new Point(
+            left.getX(), up.getY()
+        );
+        upright     = new Point(
+            right.getX(), up.getY()
+        );
+        downleft    = new Point(
+            left.getX(), down.getY()
+        );
+        downright   = new Point(
+            right.getX(), down.getY()
+        );
+        // ------------------ //
     }
 
-    private void initPos() {
-        centre = new Point(width/2, height - 65);
-        pos = new Point(centre.getX() - w/2, centre.getX());
-        endPos = new Point(centre.getX() + w/2, centre.getY());
-    }
-
-    private void move(float x) {
-        centre.moveX(x);
-        pos.moveX(x);
-        endPos.moveX(x);
-    }
-
-    private void moveTo(float x) {
-        centre.setX(x);
-        pos.setX(x);
-        endPos.setX(x + w);
-    }
-
-    public void restore() {
-        defaultSize();
-        initPos();
+    private void setVectors() {
+        corner      = new Vector(centre, downright);
+        horizontal  = new Vector(centre, right);
+        vertical    = new Vector(centre, down);
     }
 
     public float getWidth() {
@@ -396,25 +397,91 @@ class Line {
         return h;
     }
 
+    public void setWidth(float w) {
+        this.w = w;
+    }
+
+    public void setHeight(float h) {
+        this.h = h;
+    }
+
+    public void setCentre(Point centre) {
+        this.centre = centre;
+    }
+
+    public float getDistance(HitBox hb) {
+        return new Vector(centre, hb.centre).getLength();
+    }
+
+    public void update(Point centre) {
+        setCentre(centre);
+        setPoints();
+        setVectors();
+    }
+}
+class Line extends Point {
+
+    HitBox hb;
+    private float velocity = 35;
+
+    Line() {
+        super(width/2, height - 65);
+        hb = new HitBox(100, 5, this);
+        restore();
+    }
+
+    private void initPos() {
+        setX(width/2); setY(height - 65);
+        hb.update(this);
+    }
+
+    private void move(float x) {
+        moveX(x);
+    }
+
+    private void moveTo(float x) {
+        setX(x);
+    }
+
+    public void restore() {
+        initPos();
+    }
+
+    public float getWidth() {
+        return hb.getWidth();
+    }
+
+    public float getHeight() {
+        return hb.getHeight();
+    }
+
     public void update(int k){
         switch(k){
-          case 37: if(pos.getX() > 0) move(-1*velocity);
+          case 37:
+          if(hb.upleft.getX() > 0)
+            move(-1*velocity);
           break;
-          case 39: if(pos.getX() < width - w) move(velocity);
+          case 39:
+          if(hb.upright.getX() < width)
+            move(velocity);
           break;
           default:
           break;
         }
+        hb.update(this);
     }
 
     public void update() {
-        if (pos.getX() > 0 && pos.getX() < width - w) moveTo(mouseX);
+        if (getX() > 0 + hb.getWidth()/2 && getX() < width - hb.getWidth()/2)
+            moveTo(mouseX);
+
+        hb.update(this);
     }
 
     public void show(){
         fill(255);
         rectMode(CENTER);
-        rect(centre.getX(), centre.getY(), w, h);
+        rect(getX(), getY(), getWidth(), getHeight());
     }
 }
 class Player {

@@ -1,49 +1,33 @@
-class Block {
-    // Rectangle position;
-    Point centre;
+class Block extends Point {
 
-    Vector corner, vertical, horizontal;
-
-    //
-    final float w = 100;
-    final float h = 30;
-
+    HitBox hb;
     color c;
     boolean alive = true;
 
-    Block(int i, int j) {
-        initPos(i, j);
+    Block(int i, int j, float w, float h) {
+        super(i * w + w/2, j * h);
+        hb = new HitBox(w, h, this);
         c = color(random(1, 255), random(1, 255), random(1, 255));
     }
 
-    Block(int i, int j, float r, float g, float b){
-        initPos(i, j);
+    Block(int i, int j, float w, float h, float r, float g, float b){
+        super(i * w + w/2, j * h);
+        hb = new HitBox(w, h, this);
         c = color(r, g, b);
     }
 
-    Block(int i, int j, color c) {
-        initPos(i, j);
+    Block(int i, int j, float w, float h, color c) {
+        super(i * w + w/2, j * h);
+        hb = new HitBox(w, h, this);
         this.c = c;
     }
 
-    void initPos(int i, int j) {
-        centre = new Point(i * w + w/2, j * h);
-        float x = centre.getX();
-        float y = centre.getY();
-
-        corner      = new Vector(centre, new Point(x + distFromCentre(w), y + distFromCentre(h)));
-        horizontal  = new Vector(centre, new Point(x + w, y));
-        vertical    = new Vector(centre, new Point(x, y + h));
-    }
-
-    float distFromCentre(float d) {
-        return d/2;
+    float getDistanceFrom(Ball ball) {
+        return hb.getDistance(ball.hb) - ball.hb.getWidth()/2;
     }
 
     boolean isTop(Ball ball) {
-
-        float d = new Vector(ball.centre, centre).getLength() + ball.getRadius();
-        return d <= corner.getLength();
+        return getDistanceFrom(ball) <= hb.vertical.getLength();
 
         // return (ball.centre.getX() >= upleft.getX() &&
         //         ball.centre.getX() <= upright.getX())
@@ -51,18 +35,17 @@ class Block {
     }
 
     boolean isBottom(Ball ball) {
-
-        float d = new Vector(ball.centre, centre).getLength() + ball.getRadius();
-        return d <= corner.getLength();
+        return getDistanceFrom(ball) <= hb.vertical.getLength();
         // return (ball.centre.getX() >= downleft.getX() &&
         //         ball.centre.getX() <= downright.getX())
         //     && (ball.centre.getY() - ball.getRadius() == downleft.getY());
     }
 
     boolean isRight(Ball ball) {
-
-        float d = new Vector(ball.centre, centre).getLength() + ball.getRadius();
-        return d <= corner.getLength();
+        // System.out.println(getDistanceFrom(ball) + " " + hb.horizontal.getLength());
+        return getDistanceFrom(ball) <= hb.horizontal.getLength();
+        // && (ball.centre.getY() - ball.getRadius() >=   upright.getY() &&
+        //     ball.centre.getY() - ball.getRadius() <= downright.getY());
 
         // return (ball.centre.getY() - ball.getRadius() >=   upright.getY() &&
         //         ball.centre.getY() - ball.getRadius() <= downright.getY())
@@ -70,16 +53,16 @@ class Block {
     }
 
     boolean isLeft(Ball ball) {
-
-        float d = new Vector(ball.centre, centre).getLength() + ball.getRadius();
-        return d <= corner.getLength();
+        return getDistanceFrom(ball) <= hb.horizontal.getLength();
+        // && (ball.centre.getY() + ball.getRadius() >=   upleft.getY() &&
+        //     ball.centre.getY() + ball.getRadius() <= downleft.getY());
 
         // return (ball.centre.getY() + ball.getRadius() >=   upleft.getY() &&
         //         ball.centre.getY() + ball.getRadius() <= downleft.getY())
         //     && (ball.centre.getX() == upleft.getX());
    }
 
-    private boolean isTouched(Ball ball) {
+    private boolean isTouchedBy(Ball ball) {
         boolean touched = false;
         if (isTop(ball) || isBottom(ball)) {
             ball.vector.changeWayY();
@@ -96,7 +79,7 @@ class Block {
     }
 
     void update(Ball ball, Player player){
-        if (isTouched(ball)) {
+        if (isTouchedBy(ball)) {
             player.addPoints();
             alive = false;
         }
@@ -105,6 +88,6 @@ class Block {
     void show(){
         fill(c);
         rectMode(CENTER);
-        rect(centre.getX(), centre.getY(), w, h);
+        rect(getX(), getY(), hb.getWidth(), hb.getHeight());
     }
 }
