@@ -36,7 +36,7 @@ public void setup(){
     blocks = new Block[60];
     lit = new Line();
     ball = new Ball();
-    player = new Player("Pepe");
+    player = new Player("Player 1");
 
     int a = 0;
 
@@ -81,37 +81,48 @@ public void setup(){
 public void reset() {
     ball.restore();
     lit.restore();
+    if (player.lost() && !gameStarted) {
+        player = new Player("Player 2");
+    }
     gameStarted=false;
 }
 
 public void draw(){
-    background(0);
+    background(211, 211, 211);
 
-    if(gameStarted) {
-        // Only if you want to use mouse
-        // lit.update();
-        ball.update(lit);
-        if(ball.isTouchingDown()){
-            player.looseLives();
-            reset();
+    if (!player.lost()) {
+        if(gameStarted) {
+            // Only if you want to use mouse
+            // lit.update();
+            ball.update(lit);
+            if(ball.isTouchingDown()){
+                player.looseLives();
+                reset();
+            }
         }
+
+        for (int i = 0; i < blocks.length; i++){
+            boolean isAlive = blocks[i].isAlive();
+            if (isAlive) {
+                blocks[i].show();
+                blocks[i].update(ball, player);
+            }
+        }
+
+        player.show();
+        ball.show();
+        lit.show();
+    } else {
+        textSize(32);
+        fill(0);
+        String msg = "YOU'VE LOST";
+        text(msg, width/2 - msg.length()*32/3, height/2);
     }
 
-    lit.show();
 
-    for (int i = 0; i < blocks.length; i++){
-        boolean isAlive = blocks[i].isAlive();
-        if (isAlive) {
-            blocks[i].show();
-            blocks[i].update(ball, player);
-        }
-    }
-
-    player.show();
-    ball.show();
-
-    fill(255);
-    text("Created by Ismael and Carlos   (C) 2018", 20, 700);
+    fill(0);
+    textSize(12);
+    text("Created by Carlos and Ismael   (C) 2018", 20, height-20);
 
 }
 
@@ -134,13 +145,13 @@ class Ball extends Point {
     HitBox hb;
     Vector vector;
     Velocity velo;
+    int posMode = CENTER;
 
-    private final float diameter = 15;
+    private final float diameter = 10;
 
     Ball() {
         super(width/2, height - 80);
-        velo = new Velocity(4, 4);
-        hb = new HitBox(diameter, diameter, this);
+        hb = new HitBox(diameter, diameter, this, posMode);
         restore();
     }
 
@@ -150,6 +161,10 @@ class Ball extends Point {
 
     private void initVector() {
         vector = new Vector(random(1, -1), -1);
+    }
+
+    private void initVelocity() {
+        velo = new Velocity(6, 6);
     }
 
     public float getRadius() {
@@ -195,11 +210,12 @@ class Ball extends Point {
     public void restore(){
         initPos();
         initVector();
+        initVelocity();
     }
 
     public void show(){
-        fill(255);
-        ellipseMode(CENTER);
+        fill(0);
+        ellipseMode(posMode);
         ellipse(getX(), getY(), diameter, diameter);
     }
 }
@@ -207,23 +223,21 @@ class Block extends Point {
 
     HitBox hb;
     int c;
-    boolean alive = true;
+    int posMode     = CENTER;
+    boolean alive   = true;
+
 
     Block(int i, int j, float w, float h) {
-        super(i * w + w/2, j * h);
-        hb = new HitBox(w, h, this);
-        c = color(random(1, 255), random(1, 255), random(1, 255));
+        this(i, j, w, h, color(random(1, 255), random(1, 255), random(1, 255)));
     }
 
     Block(int i, int j, float w, float h, float r, float g, float b){
-        super(i * w + w/2, j * h);
-        hb = new HitBox(w, h, this);
-        c = color(r, g, b);
+        this(i, j, w, h, color(r, g, b));
     }
 
     Block(int i, int j, float w, float h, int c) {
         super(i * w + w/2, j * h);
-        hb = new HitBox(w, h, this);
+        hb = new HitBox(w, h, this, posMode);
         this.c = c;
     }
 
@@ -231,16 +245,10 @@ class Block extends Point {
         boolean[] touched = ball.hb.hit(this.hb);
 
         if (touched[HitBox.HIT]) {
-            if (touched[HitBox.TOP]) {
+            if (touched[HitBox.TOP]  || touched[HitBox.BOTTOM]) {
                 ball.vector.changeWayY();
             }
-            if (touched[HitBox.BOTTOM]) {
-                ball.vector.changeWayY();
-            }
-            if (touched[HitBox.LEFT]) {
-                ball.vector.changeWayX();
-            }
-            if (touched[HitBox.RIGHT]) {
+            if (touched[HitBox.LEFT] || touched[HitBox.RIGHT]) {
                 ball.vector.changeWayX();
             }
         }
@@ -260,7 +268,7 @@ class Block extends Point {
 
     public void show(){
         fill(c);
-        rectMode(CENTER);
+        rectMode(posMode);
         rect(getX(), getY(), hb.getWidth(), hb.getHeight());
     }
 }
@@ -302,63 +310,83 @@ class Coordinate {
 }
 class HitBox {
     private Point up, down, left, right;
-    Point upleft, upright, downleft, downright;
+    Point upLeft, upRight;
+    Point downLeft, downRight;
 
+    // Hit Sides Code
     static final int HIT      = 0;
     static final int LEFT     = 1;
     static final int RIGHT    = 2;
     static final int TOP      = 3;
     static final int BOTTOM   = 4;
 
-
-
     Point centre;
 
-    private Vector corner, vertical, horizontal;
+    // private Vector corner, vertical, horizontal;
 
     private float w, h;
 
-    HitBox(float w, float h, Point centre) {
+    HitBox(float w, float h, Point point, int mode) {
         setWidth(w);
         setHeight(h);
-        update(centre);
+        switch (mode) {
+            case CENTER:
+            case RADIUS:
+                update(point);
+            break;
+            case CORNER:
+                update(new Point(point.getX() + getHalfWidth(), point.getY() + getHalfHeight()));
+            break;
+        }
+    }
+
+    HitBox(float w, float h, Point point) {
+        this(w, h, point, CORNER);
+    }
+
+    public float getHalfHeight() {
+        return h/2;
+    }
+
+    public float getHalfWidth() {
+        return w/2;
     }
 
     private void setPoints() {
         up      = new Point(
-            centre.getX(), centre.getY() - getHeight()/2
+            centre.getX(), centre.getY() - getHalfHeight()
         );
         down    = new Point(
-            centre.getX(), centre.getY() + getHeight()/2
+            centre.getX(), centre.getY() + getHalfHeight()
         );
         left    = new Point(
-            centre.getX() - getWidth()/2, centre.getY()
+            centre.getX() - getHalfWidth(), centre.getY()
         );
         right   = new Point(
-            centre.getX() + getWidth()/2, centre.getY()
+            centre.getX() + getHalfWidth(), centre.getY()
         );
 
         // ------------------ //
-        upleft      = new Point(
+        upLeft      = new Point(
             left.getX(), up.getY()
         );
-        upright     = new Point(
+        upRight     = new Point(
             right.getX(), up.getY()
         );
-        downleft    = new Point(
-            left.getX(), down.getY()
-        );
-        downright   = new Point(
-            right.getX(), down.getY()
-        );
+        // downLeft    = new Point(
+        //     left.getX(), down.getY()
+        // );
+        // downRight   = new Point(
+        //     right.getX(), down.getY()
+        // );
         // ------------------ //
     }
 
-    private void setVectors() {
-        corner      = new Vector(centre, downright);
-        horizontal  = new Vector(centre, right);
-        vertical    = new Vector(centre, down);
-    }
+    // private void setVectors() {
+    //     corner      = new Vector(centre, downRight);
+    //     horizontal  = new Vector(centre, right);
+    //     vertical    = new Vector(centre, down);
+    // }
 
     public float getWidth() {
         return w;
@@ -380,11 +408,6 @@ class HitBox {
         this.centre = centre;
     }
 
-    public float getDistance(HitBox hb) {
-        // r(t) = min(R, w*abs(sec(t)), h*abs(csc(t))
-        return new Vector(centre, hb.centre).getLength();
-    }
-
     public boolean[] hit(HitBox shape) {
         boolean[] side = new boolean[5];
 
@@ -392,32 +415,31 @@ class HitBox {
         side[HIT] = side[LEFT] = side[RIGHT] = side[TOP] = side[BOTTOM] = false;
 
         // temporary variables to set edges for testing
-        float testX = upleft.getX();
-        float testY = upleft.getY();
+        Point test = upLeft.clone();
+
 
         // which edge is closest?
-        if (upleft.getX() < shape.upleft.getX()) {
+        if (upLeft.getX() < shape.upLeft.getX()) {
             side[LEFT] = true;
-            testX = shape.upleft.getX();                                    // test left edge
-        } else if (upleft.getX() > shape.upleft.getX() + shape.getWidth()) {
+            test.setX(shape.upLeft.getX());                                    // test left edge
+        } else if (upLeft.getX() > shape.upLeft.getX() + shape.getWidth()) {
             side[RIGHT] = true;
-            testX = shape.upleft.getX() + shape.getWidth();                 // right edge
+            test.setX(shape.upLeft.getX() + shape.getWidth());                 // right edge
         }
-        if (upleft.getY() < shape.upleft.getY()) {
+        if (upLeft.getY() < shape.upLeft.getY()) {
             side[TOP] = true;
-            testY = shape.upleft.getY();                                    // top edge
-        } else if (upleft.getY() > shape.upleft.getY() + shape.getHeight()) {
+            test.setY(shape.upLeft.getY());                                    // top edge
+        } else if (upLeft.getY() > shape.upLeft.getY() + shape.getHeight()) {
             side[BOTTOM] = true;
-            testY = shape.upleft.getY() + shape.getHeight();                // bottom edge
+            test.setY(shape.upLeft.getY() + shape.getHeight());                // bottom edge
         }
 
         // get distance from closest edges
-        float distX = upleft.getX() - testX;
-        float distY = upleft.getY() - testY;
-        float distance = sqrt( (distX*distX) + (distY*distY) );
+
+        float distance = upLeft.distance(test);
 
         // if the distance is less than the radius, collision!
-        if (distance <= getWidth()/2) {
+        if (distance <= getHalfWidth()) {
             side[HIT] = true;
         }
         return side;
@@ -426,17 +448,17 @@ class HitBox {
     public void update(Point centre) {
         setCentre(centre);
         setPoints();
-        setVectors();
+        // setVectors();
     }
 }
 class Line extends Point {
 
     HitBox hb;
     Velocity velocity;
+    int posMode = CENTER;
 
     Line() {
         super(width/2, height - 65);
-        setX(width/2); setY(height - 65);
         velocity = new Velocity(35, 0);
         hb = new HitBox(100, 10, this);
         restore();
@@ -467,14 +489,14 @@ class Line extends Point {
         return hb.getHeight();
     }
 
-    public void update(int k){
-        switch(k){
+    public void update(int keyC){
+        switch(keyC){
           case 37:
-          if(hb.upleft.getX() > 0)
+          if(hb.upLeft.getX() > 0)
             move(-1*velocity.getXVelocity());
           break;
           case 39:
-          if(hb.upright.getX() < width)
+          if(hb.upRight.getX() < width)
             move(velocity.getXVelocity());
           break;
           default:
@@ -484,15 +506,15 @@ class Line extends Point {
     }
 
     public void update() {
-        if (getX() > 0 + hb.getWidth()/2 && getX() < width - hb.getWidth()/2)
+        if (getX() > 0 + hb.getHalfWidth() && getX() < width - hb.getHalfWidth())
             moveTo(mouseX);
 
         hb.update(this);
     }
 
     public void show(){
-        fill(255);
-        rectMode(CENTER);
+        fill(0);
+        rectMode(posMode);
         rect(getX(), getY(), getWidth(), getHeight());
     }
 }
@@ -501,16 +523,16 @@ class Player {
     private float score;
     private byte lives;
 
-    Player(String s){
-        name=s;
-        score=0;
-        lives=30;
+    public Player(String name){
+        this.name=name;
+        score = 0;
+        lives = 3;
     }
 
     public void show(){
-        fill(255);
-        text(name + " : " + score, width-80, height-40);
-        text("lives: " + lives, width-80, height-30);
+        fill(0);
+        text(name + " : " + score + " ", width-80, height-40);
+        text("Lives: " + lives + " ", width-80, height-30);
     }
 
     public boolean lost(){
@@ -536,12 +558,16 @@ class Point extends Coordinate {
     }
 
     public float distance(Point b) {
-        return sqrt(
+        return abs(sqrt(
             (b.getX() - this.getX())
           * (b.getX() - this.getX())
           + (b.getY() - this.getY())
           * (b.getY() - this.getY())
-        );
+        ));
+    }
+
+    public Point clone() {
+        return new Point(getX(), getY());
     }
 }
 class Vector extends Coordinate {

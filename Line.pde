@@ -2,10 +2,10 @@ class Line extends Point {
 
     HitBox hb;
     Velocity velocity;
+    int posMode = CENTER;
 
     Line() {
         super(width/2, height - 65);
-        setX(width/2); setY(height - 65);
         velocity = new Velocity(35, 0);
         hb = new HitBox(100, 10, this);
         restore();
@@ -36,14 +36,14 @@ class Line extends Point {
         return hb.getHeight();
     }
 
-    void update(int k){
-        switch(k){
+    void update(int keyC){
+        switch(keyC){
           case 37:
-          if(hb.upleft.getX() > 0)
+          if(hb.upLeft.getX() > 0)
             move(-1*velocity.getXVelocity());
           break;
           case 39:
-          if(hb.upright.getX() < width)
+          if(hb.upRight.getX() < width)
             move(velocity.getXVelocity());
           break;
           default:
@@ -53,15 +53,15 @@ class Line extends Point {
     }
 
     void update() {
-        if (getX() > 0 + hb.getWidth()/2 && getX() < width - hb.getWidth()/2)
+        if (getX() > 0 + hb.getHalfWidth() && getX() < width - hb.getHalfWidth())
             moveTo(mouseX);
 
         hb.update(this);
     }
 
     void show(){
-        fill(255);
-        rectMode(CENTER);
+        fill(0);
+        rectMode(posMode);
         rect(getX(), getY(), getWidth(), getHeight());
     }
 }

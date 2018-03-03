@@ -20,7 +20,7 @@ void setup(){
     blocks = new Block[60];
     lit = new Line();
     ball = new Ball();
-    player = new Player("Pepe");
+    player = new Player("Player 1");
 
     int a = 0;
 
@@ -65,37 +65,48 @@ void setup(){
 void reset() {
     ball.restore();
     lit.restore();
+    if (player.lost() && !gameStarted) {
+        player = new Player("Player 2");
+    }
     gameStarted=false;
 }
 
 void draw(){
-    background(0);
+    background(211, 211, 211);
 
-    if(gameStarted) {
-        // Only if you want to use mouse
-        // lit.update();
-        ball.update(lit);
-        if(ball.isTouchingDown()){
-            player.looseLives();
-            reset();
+    if (!player.lost()) {
+        if(gameStarted) {
+            // Only if you want to use mouse
+            // lit.update();
+            ball.update(lit);
+            if(ball.isTouchingDown()){
+                player.looseLives();
+                reset();
+            }
         }
+
+        for (int i = 0; i < blocks.length; i++){
+            boolean isAlive = blocks[i].isAlive();
+            if (isAlive) {
+                blocks[i].show();
+                blocks[i].update(ball, player);
+            }
+        }
+
+        player.show();
+        ball.show();
+        lit.show();
+    } else {
+        textSize(32);
+        fill(0);
+        String msg = "YOU'VE LOST";
+        text(msg, width/2 - msg.length()*32/3, height/2);
     }
 
-    lit.show();
 
-    for (int i = 0; i < blocks.length; i++){
-        boolean isAlive = blocks[i].isAlive();
-        if (isAlive) {
-            blocks[i].show();
-            blocks[i].update(ball, player);
-        }
-    }
-
-    player.show();
-    ball.show();
-
-    fill(255);
-    text("Created by Ismael and Carlos   (C) 2018", 20, 700);
+    fill(0);
+    textSize(12);
+    text("Created by Carlos and Ismael   (C) 2018", 20, height-20);
 
 }
 

@@ -3,13 +3,13 @@ class Ball extends Point {
     HitBox hb;
     Vector vector;
     Velocity velo;
+    int posMode = CENTER;
 
-    private final float diameter = 15;
+    private final float diameter = 10;
 
     Ball() {
         super(width/2, height - 80);
-        velo = new Velocity(4, 4);
-        hb = new HitBox(diameter, diameter, this);
+        hb = new HitBox(diameter, diameter, this, posMode);
         restore();
     }
 
@@ -19,6 +19,10 @@ class Ball extends Point {
 
     private void initVector() {
         vector = new Vector(random(1, -1), -1);
+    }
+
+    private void initVelocity() {
+        velo = new Velocity(6, 6);
     }
 
     float getRadius() {
@@ -64,11 +68,12 @@ class Ball extends Point {
     void restore(){
         initPos();
         initVector();
+        initVelocity();
     }
 
     void show(){
-        fill(255);
-        ellipseMode(CENTER);
+        fill(0);
+        ellipseMode(posMode);
         ellipse(getX(), getY(), diameter, diameter);
     }
 }

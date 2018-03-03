@@ -4,11 +4,15 @@ class Point extends Coordinate {
     }
 
     float distance(Point b) {
-        return sqrt(
+        return abs(sqrt(
             (b.getX() - this.getX())
           * (b.getX() - this.getX())
           + (b.getY() - this.getY())
           * (b.getY() - this.getY())
-        );
+        ));
+    }
+
+    Point clone() {
+        return new Point(getX(), getY());
     }
 }

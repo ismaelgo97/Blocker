@@ -3,16 +3,16 @@ class Player {
     private float score;
     private byte lives;
 
-    Player(String s){
-        name=s;
-        score=0;
-        lives=30;
+    public Player(String name){
+        this.name=name;
+        score = 0;
+        lives = 3;
     }
 
     void show(){
-        fill(255);
-        text(name + " : " + score, width-80, height-40);
-        text("lives: " + lives, width-80, height-30);
+        fill(0);
+        text(name + " : " + score + " ", width-80, height-40);
+        text("Lives: " + lives + " ", width-80, height-30);
     }
 
     boolean lost(){

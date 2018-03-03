@@ -1,62 +1,82 @@
 class HitBox {
     private Point up, down, left, right;
-    Point upleft, upright, downleft, downright;
+    Point upLeft, upRight;
+    Point downLeft, downRight;
 
+    // Hit Sides Code
     static final int HIT      = 0;
     static final int LEFT     = 1;
     static final int RIGHT    = 2;
     static final int TOP      = 3;
     static final int BOTTOM   = 4;
 
-
-
     Point centre;
 
-    private Vector corner, vertical, horizontal;
+    // private Vector corner, vertical, horizontal;
 
     private float w, h;
 
-    HitBox(float w, float h, Point centre) {
+    HitBox(float w, float h, Point point, int mode) {
         setWidth(w);
         setHeight(h);
-        update(centre);
+        switch (mode) {
+            case CENTER:
+            case RADIUS:
+                update(point);
+            break;
+            case CORNER:
+                update(new Point(point.getX() + getHalfWidth(), point.getY() + getHalfHeight()));
+            break;
+        }
+    }
+
+    HitBox(float w, float h, Point point) {
+        this(w, h, point, CORNER);
+    }
+
+    float getHalfHeight() {
+        return h/2;
+    }
+
+    float getHalfWidth() {
+        return w/2;
     }
 
     private void setPoints() {
         up      = new Point(
-            centre.getX(), centre.getY() - getHeight()/2
+            centre.getX(), centre.getY() - getHalfHeight()
         );
         down    = new Point(
-            centre.getX(), centre.getY() + getHeight()/2
+            centre.getX(), centre.getY() + getHalfHeight()
         );
         left    = new Point(
-            centre.getX() - getWidth()/2, centre.getY()
+            centre.getX() - getHalfWidth(), centre.getY()
         );
         right   = new Point(
-            centre.getX() + getWidth()/2, centre.getY()
+            centre.getX() + getHalfWidth(), centre.getY()
         );
 
         // ------------------ //
-        upleft      = new Point(
+        upLeft      = new Point(
             left.getX(), up.getY()
         );
-        upright     = new Point(
+        upRight     = new Point(
             right.getX(), up.getY()
         );
-        downleft    = new Point(
-            left.getX(), down.getY()
-        );
-        downright   = new Point(
-            right.getX(), down.getY()
-        );
+        // downLeft    = new Point(
+        //     left.getX(), down.getY()
+        // );
+        // downRight   = new Point(
+        //     right.getX(), down.getY()
+        // );
         // ------------------ //
     }
 
-    private void setVectors() {
-        corner      = new Vector(centre, downright);
-        horizontal  = new Vector(centre, right);
-        vertical    = new Vector(centre, down);
-    }
+    // private void setVectors() {
+    //     corner      = new Vector(centre, downRight);
+    //     horizontal  = new Vector(centre, right);
+    //     vertical    = new Vector(centre, down);
+    // }
 
     float getWidth() {
         return w;
@@ -78,11 +98,6 @@ class HitBox {
         this.centre = centre;
     }
 
-    float getDistance(HitBox hb) {
-        // r(t) = min(R, w*abs(sec(t)), h*abs(csc(t))
-        return new Vector(centre, hb.centre).getLength();
-    }
-
     boolean[] hit(HitBox shape) {
         boolean[] side = new boolean[5];
 
@@ -90,32 +105,31 @@ class HitBox {
         side[HIT] = side[LEFT] = side[RIGHT] = side[TOP] = side[BOTTOM] = false;
 
         // temporary variables to set edges for testing
-        float testX = upleft.getX();
-        float testY = upleft.getY();
+        Point test = upLeft.clone();
+
 
         // which edge is closest?
-        if (upleft.getX() < shape.upleft.getX()) {
+        if (upLeft.getX() < shape.upLeft.getX()) {
             side[LEFT] = true;
-            testX = shape.upleft.getX();                                    // test left edge
-        } else if (upleft.getX() > shape.upleft.getX() + shape.getWidth()) {
+            test.setX(shape.upLeft.getX());                                    // test left edge
+        } else if (upLeft.getX() > shape.upLeft.getX() + shape.getWidth()) {
             side[RIGHT] = true;
-            testX = shape.upleft.getX() + shape.getWidth();                 // right edge
+            test.setX(shape.upLeft.getX() + shape.getWidth());                 // right edge
         }
-        if (upleft.getY() < shape.upleft.getY()) {
+        if (upLeft.getY() < shape.upLeft.getY()) {
             side[TOP] = true;
-            testY = shape.upleft.getY();                                    // top edge
-        } else if (upleft.getY() > shape.upleft.getY() + shape.getHeight()) {
+            test.setY(shape.upLeft.getY());                                    // top edge
+        } else if (upLeft.getY() > shape.upLeft.getY() + shape.getHeight()) {
             side[BOTTOM] = true;
-            testY = shape.upleft.getY() + shape.getHeight();                // bottom edge
+            test.setY(shape.upLeft.getY() + shape.getHeight());                // bottom edge
         }
 
         // get distance from closest edges
-        float distX = upleft.getX() - testX;
-        float distY = upleft.getY() - testY;
-        float distance = sqrt( (distX*distX) + (distY*distY) );
+
+        float distance = upLeft.distance(test);
 
         // if the distance is less than the radius, collision!
-        if (distance <= getWidth()/2) {
+        if (distance <= getHalfWidth()) {
             side[HIT] = true;
         }
         return side;
@@ -124,6 +138,6 @@ class HitBox {
     void update(Point centre) {
         setCentre(centre);
         setPoints();
-        setVectors();
+        // setVectors();
     }
 }
