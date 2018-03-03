@@ -1,10 +1,11 @@
 class Line extends Point {
 
     HitBox hb;
-    private float velocity = 35;
+    Velocity velocity;
 
     Line() {
         super(width/2, height - 65);
+        velocity = new Velocity(35, 0);
         hb = new HitBox(100, 5, this);
         restore();
     }
@@ -38,11 +39,11 @@ class Line extends Point {
         switch(k){
           case 37:
           if(hb.upleft.getX() > 0)
-            move(-1*velocity);
+            move(-1*velocity.getXVelocity());
           break;
           case 39:
           if(hb.upright.getX() < width)
-            move(velocity);
+            move(velocity.getXVelocity());
           break;
           default:
           break;

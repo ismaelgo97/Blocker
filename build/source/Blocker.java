@@ -133,14 +133,13 @@ class Ball extends Point {
 
     HitBox hb;
     Vector vector;
+    Velocity velo;
 
     private final float diameter = 15;
 
-    float vx = 1;
-    float vy = 1;
-
     Ball() {
         super(width/2, height - 80);
+        velo = new Velocity(4, 4);
         hb = new HitBox(diameter, diameter, this);
         restore();
     }
@@ -150,7 +149,7 @@ class Ball extends Point {
     }
 
     private void initVector() {
-        vector = new Vector(random(6, -6), -4);
+        vector = new Vector(random(1, -1), -1);
     }
 
     public float getRadius() {
@@ -158,12 +157,8 @@ class Ball extends Point {
     }
 
     private boolean isTouchingLine(Line line) {
-        // float p = new Vector(centre, line.pos).getLength() + getRadius();
-        // float e = new Vector(centre, line.endPos).getLength() + getRadius();
-        // return p;
-        return getX() >= line.hb.upleft.getX()
-            && getX() <= line.hb.upright.getX()
-            && getY() + getRadius() >= line.getY() - line.getHeight();
+        boolean[] touched = this.hb.hit(line.hb);
+        return touched[HitBox.HIT] && touched[HitBox.TOP];
     }
 
     private boolean isTouchingTopBorder() {
@@ -186,7 +181,7 @@ class Ball extends Point {
         if (isTouchingTopBorder()) {
             vector.changeWayY();
         }
-        move(vector.getX()*vx, vector.getY()*vy);
+        move(vector.getX()*velo.getXVelocity(), vector.getY()*velo.getYVelocity());
         hb.update(this);
     }
 
@@ -232,56 +227,18 @@ class Block extends Point {
         this.c = c;
     }
 
-    public float getDistanceFrom(Ball ball) {
-        return hb.getDistance(ball.hb) - ball.hb.getWidth()/2;
-    }
-
-    public boolean isTop(Ball ball) {
-        return getDistanceFrom(ball) <= hb.vertical.getLength();
-
-        // return (ball.centre.getX() >= upleft.getX() &&
-        //         ball.centre.getX() <= upright.getX())
-        //     && (ball.centre.getY() + ball.getRadius() == upleft.getY());
-    }
-
-    public boolean isBottom(Ball ball) {
-        return getDistanceFrom(ball) <= hb.vertical.getLength();
-        // return (ball.centre.getX() >= downleft.getX() &&
-        //         ball.centre.getX() <= downright.getX())
-        //     && (ball.centre.getY() - ball.getRadius() == downleft.getY());
-    }
-
-    public boolean isRight(Ball ball) {
-        // System.out.println(getDistanceFrom(ball) + " " + hb.horizontal.getLength());
-        return getDistanceFrom(ball) <= hb.horizontal.getLength();
-        // && (ball.centre.getY() - ball.getRadius() >=   upright.getY() &&
-        //     ball.centre.getY() - ball.getRadius() <= downright.getY());
-
-        // return (ball.centre.getY() - ball.getRadius() >=   upright.getY() &&
-        //         ball.centre.getY() - ball.getRadius() <= downright.getY())
-        //     && (ball.centre.getX() == upright.getX());
-    }
-
-    public boolean isLeft(Ball ball) {
-        return getDistanceFrom(ball) <= hb.horizontal.getLength();
-        // && (ball.centre.getY() + ball.getRadius() >=   upleft.getY() &&
-        //     ball.centre.getY() + ball.getRadius() <= downleft.getY());
-
-        // return (ball.centre.getY() + ball.getRadius() >=   upleft.getY() &&
-        //         ball.centre.getY() + ball.getRadius() <= downleft.getY())
-        //     && (ball.centre.getX() == upleft.getX());
-   }
-
     private boolean isTouchedBy(Ball ball) {
-        boolean touched = false;
-        if (isTop(ball) || isBottom(ball)) {
-            ball.vector.changeWayY();
-            touched = true;
-        } else if (isLeft(ball) || isRight(ball)) {
-            ball.vector.changeWayX();
-            touched = true;
+        boolean[] touched = ball.hb.hit(this.hb);
+
+        if (touched[HitBox.HIT]) {
+            if (touched[HitBox.TOP]  || touched[HitBox.BOTTOM]) {
+                ball.vector.changeWayY();
+            }
+            if (touched[HitBox.LEFT] || touched[HitBox.RIGHT]) {
+                ball.vector.changeWayX();
+            }
         }
-        return touched;
+        return touched[HitBox.HIT];
     }
 
     public boolean isAlive() {
@@ -340,6 +297,12 @@ class Coordinate {
 class HitBox {
     private Point up, down, left, right;
     Point upleft, upright, downleft, downright;
+
+    static final int HIT      = 0;
+    static final int LEFT     = 1;
+    static final int RIGHT    = 2;
+    static final int TOP      = 3;
+    static final int BOTTOM   = 4;
 
     Point centre;
 
@@ -410,7 +373,46 @@ class HitBox {
     }
 
     public float getDistance(HitBox hb) {
+        // r(t) = min(R, w*abs(sec(t)), h*abs(csc(t))
         return new Vector(centre, hb.centre).getLength();
+    }
+
+    public boolean[] hit(HitBox shape) {
+        boolean[] side = new boolean[5];
+
+        // hit  -    left    -    right    -    top    -    bottom
+        side[HIT] = side[LEFT] = side[RIGHT] = side[TOP] = side[BOTTOM] = false;
+
+        // temporary variables to set edges for testing
+        float testX = centre.getX();
+        float testY = centre.getY();
+
+        // which edge is closest?
+        if (centre.getX() < shape.centre.getX()) {
+            side[LEFT] = true;
+            testX = shape.centre.getX();                                    // test left edge
+        } else if (centre.getX() > shape.centre.getX() + shape.getWidth()) {
+            side[RIGHT] = true;
+            testX = shape.centre.getX() + shape.getWidth();                 // right edge
+        }
+        if (centre.getY() < shape.centre.getY()) {
+            side[TOP] = true;
+            testY = shape.centre.getY();                                    // top edge
+        } else if (centre.getY() > shape.centre.getY() + shape.getHeight()) {
+            side[BOTTOM] = true;
+            testY = shape.centre.getY() + shape.getHeight();                // bottom edge
+        }
+
+        // get distance from closest edges
+        float distX = centre.getX() - testX;
+        float distY = centre.getY() - testY;
+        float distance = sqrt( (distX*distX) + (distY*distY) );
+
+        // if the distance is less than the radius, collision!
+        if (distance <= getWidth()/2) {
+            side[HIT] = true;
+        }
+        return side;
     }
 
     public void update(Point centre) {
@@ -422,10 +424,11 @@ class HitBox {
 class Line extends Point {
 
     HitBox hb;
-    private float velocity = 35;
+    Velocity velocity;
 
     Line() {
         super(width/2, height - 65);
+        velocity = new Velocity(35, 0);
         hb = new HitBox(100, 5, this);
         restore();
     }
@@ -459,11 +462,11 @@ class Line extends Point {
         switch(k){
           case 37:
           if(hb.upleft.getX() > 0)
-            move(-1*velocity);
+            move(-1*velocity.getXVelocity());
           break;
           case 39:
           if(hb.upright.getX() < width)
-            move(velocity);
+            move(velocity.getXVelocity());
           break;
           default:
           break;
@@ -554,12 +557,77 @@ class Vector extends Coordinate {
         return mod;
     }
 
+    public Point getOrigin() {
+        return a;
+    }
+
+    public Point getEnd() {
+        return b;
+    }
+
+    public float getAngle(Vector v) {
+        return acos(cos(scalarMult(v) / (getLength() * v.getLength())));
+    }
+
+    private float scalarMult(Vector v) {
+        return (getOrigin().getX() * getEnd().getX())
+             + (v.getOrigin().getY() * v.getEnd().getY());
+    }
+
+    private float vectorialMult(Vector v) {
+        return 0;
+    }
+
     public void changeWayX() {
         setX(getX() * -1);
     }
 
     public void changeWayY() {
         setY(getY() * -1);
+    }
+}
+class Velocity {
+    private float x, y;
+
+    Velocity(float x, float y) {
+        setVelocity(x, y);
+    }
+
+    Velocity() {
+        this(1, 1);
+    }
+
+    public void setVelocity(float x, float y) {
+         setXVelocity(x); setYVelocity(y);
+    }
+
+    public void setXVelocity(float x) {
+        this.x = x;
+    }
+
+    public void setYVelocity(float y) {
+        this.y = y;
+    }
+
+    public float getXVelocity() {
+        return x;
+    }
+
+    public float getYVelocity() {
+        return y;
+    }
+
+    public void faster(float times) {
+        setVelocity(x + times, y + times);
+    }
+
+    public void slower(float times) {
+        if (x - times > 0 && y - times > 0)
+            setVelocity(x - times, y - times);
+    }
+
+    public void stop() {
+        setVelocity(0, 0);
     }
 }
   public void settings() {  size(1000, 720);  smooth(2); }

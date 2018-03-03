@@ -2,14 +2,13 @@ class Ball extends Point {
 
     HitBox hb;
     Vector vector;
+    Velocity velo;
 
     private final float diameter = 15;
 
-    float vx = 1;
-    float vy = 1;
-
     Ball() {
         super(width/2, height - 80);
+        velo = new Velocity(4, 4);
         hb = new HitBox(diameter, diameter, this);
         restore();
     }
@@ -19,7 +18,7 @@ class Ball extends Point {
     }
 
     private void initVector() {
-        vector = new Vector(random(6, -6), -4);
+        vector = new Vector(random(1, -1), -1);
     }
 
     float getRadius() {
@@ -27,12 +26,8 @@ class Ball extends Point {
     }
 
     private boolean isTouchingLine(Line line) {
-        // float p = new Vector(centre, line.pos).getLength() + getRadius();
-        // float e = new Vector(centre, line.endPos).getLength() + getRadius();
-        // return p;
-        return getX() >= line.hb.upleft.getX()
-            && getX() <= line.hb.upright.getX()
-            && getY() + getRadius() >= line.getY() - line.getHeight();
+        boolean[] touched = this.hb.hit(line.hb);
+        return touched[HitBox.HIT] && touched[HitBox.TOP];
     }
 
     private boolean isTouchingTopBorder() {
@@ -55,7 +50,7 @@ class Ball extends Point {
         if (isTouchingTopBorder()) {
             vector.changeWayY();
         }
-        move(vector.getX()*vx, vector.getY()*vy);
+        move(vector.getX()*velo.getXVelocity(), vector.getY()*velo.getYVelocity());
         hb.update(this);
     }
 

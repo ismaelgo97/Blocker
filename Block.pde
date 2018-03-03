@@ -22,56 +22,18 @@ class Block extends Point {
         this.c = c;
     }
 
-    float getDistanceFrom(Ball ball) {
-        return hb.getDistance(ball.hb) - ball.hb.getWidth()/2;
-    }
-
-    boolean isTop(Ball ball) {
-        return getDistanceFrom(ball) <= hb.vertical.getLength();
-
-        // return (ball.centre.getX() >= upleft.getX() &&
-        //         ball.centre.getX() <= upright.getX())
-        //     && (ball.centre.getY() + ball.getRadius() == upleft.getY());
-    }
-
-    boolean isBottom(Ball ball) {
-        return getDistanceFrom(ball) <= hb.vertical.getLength();
-        // return (ball.centre.getX() >= downleft.getX() &&
-        //         ball.centre.getX() <= downright.getX())
-        //     && (ball.centre.getY() - ball.getRadius() == downleft.getY());
-    }
-
-    boolean isRight(Ball ball) {
-        // System.out.println(getDistanceFrom(ball) + " " + hb.horizontal.getLength());
-        return getDistanceFrom(ball) <= hb.horizontal.getLength();
-        // && (ball.centre.getY() - ball.getRadius() >=   upright.getY() &&
-        //     ball.centre.getY() - ball.getRadius() <= downright.getY());
-
-        // return (ball.centre.getY() - ball.getRadius() >=   upright.getY() &&
-        //         ball.centre.getY() - ball.getRadius() <= downright.getY())
-        //     && (ball.centre.getX() == upright.getX());
-    }
-
-    boolean isLeft(Ball ball) {
-        return getDistanceFrom(ball) <= hb.horizontal.getLength();
-        // && (ball.centre.getY() + ball.getRadius() >=   upleft.getY() &&
-        //     ball.centre.getY() + ball.getRadius() <= downleft.getY());
-
-        // return (ball.centre.getY() + ball.getRadius() >=   upleft.getY() &&
-        //         ball.centre.getY() + ball.getRadius() <= downleft.getY())
-        //     && (ball.centre.getX() == upleft.getX());
-   }
-
     private boolean isTouchedBy(Ball ball) {
-        boolean touched = false;
-        if (isTop(ball) || isBottom(ball)) {
-            ball.vector.changeWayY();
-            touched = true;
-        } else if (isLeft(ball) || isRight(ball)) {
-            ball.vector.changeWayX();
-            touched = true;
+        boolean[] touched = ball.hb.hit(this.hb);
+
+        if (touched[HitBox.HIT]) {
+            if (touched[HitBox.TOP]  || touched[HitBox.BOTTOM]) {
+                ball.vector.changeWayY();
+            }
+            if (touched[HitBox.LEFT] || touched[HitBox.RIGHT]) {
+                ball.vector.changeWayX();
+            }
         }
-        return touched;
+        return touched[HitBox.HIT];
     }
 
     boolean isAlive() {
