@@ -8,6 +8,8 @@ class HitBox {
     static final int TOP      = 3;
     static final int BOTTOM   = 4;
 
+
+
     Point centre;
 
     private Vector corner, vertical, horizontal;
@@ -88,28 +90,28 @@ class HitBox {
         side[HIT] = side[LEFT] = side[RIGHT] = side[TOP] = side[BOTTOM] = false;
 
         // temporary variables to set edges for testing
-        float testX = centre.getX();
-        float testY = centre.getY();
+        float testX = upleft.getX();
+        float testY = upleft.getY();
 
         // which edge is closest?
-        if (centre.getX() < shape.centre.getX()) {
+        if (upleft.getX() < shape.upleft.getX()) {
             side[LEFT] = true;
-            testX = shape.centre.getX();                                    // test left edge
-        } else if (centre.getX() > shape.centre.getX() + shape.getWidth()) {
+            testX = shape.upleft.getX();                                    // test left edge
+        } else if (upleft.getX() > shape.upleft.getX() + shape.getWidth()) {
             side[RIGHT] = true;
-            testX = shape.centre.getX() + shape.getWidth();                 // right edge
+            testX = shape.upleft.getX() + shape.getWidth();                 // right edge
         }
-        if (centre.getY() < shape.centre.getY()) {
+        if (upleft.getY() < shape.upleft.getY()) {
             side[TOP] = true;
-            testY = shape.centre.getY();                                    // top edge
-        } else if (centre.getY() > shape.centre.getY() + shape.getHeight()) {
+            testY = shape.upleft.getY();                                    // top edge
+        } else if (upleft.getY() > shape.upleft.getY() + shape.getHeight()) {
             side[BOTTOM] = true;
-            testY = shape.centre.getY() + shape.getHeight();                // bottom edge
+            testY = shape.upleft.getY() + shape.getHeight();                // bottom edge
         }
 
         // get distance from closest edges
-        float distX = centre.getX() - testX;
-        float distY = centre.getY() - testY;
+        float distX = upleft.getX() - testX;
+        float distY = upleft.getY() - testY;
         float distance = sqrt( (distX*distX) + (distY*distY) );
 
         // if the distance is less than the radius, collision!

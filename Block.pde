@@ -26,10 +26,16 @@ class Block extends Point {
         boolean[] touched = ball.hb.hit(this.hb);
 
         if (touched[HitBox.HIT]) {
-            if (touched[HitBox.TOP]  || touched[HitBox.BOTTOM]) {
+            if (touched[HitBox.TOP]) {
                 ball.vector.changeWayY();
             }
-            if (touched[HitBox.LEFT] || touched[HitBox.RIGHT]) {
+            if (touched[HitBox.BOTTOM]) {
+                ball.vector.changeWayY();
+            }
+            if (touched[HitBox.LEFT]) {
+                ball.vector.changeWayX();
+            }
+            if (touched[HitBox.RIGHT]) {
                 ball.vector.changeWayX();
             }
         }
