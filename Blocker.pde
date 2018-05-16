@@ -24,25 +24,6 @@ void setup(){
 
     int a = 0;
 
-    /*
-
-    for (int i = 0; i < 60; i++) {
-        for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, red);
-            a++;
-        }
-        for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, red);
-            a++;
-        }
-        for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, red);
-            a++;
-        }
-    }
-
-    */
-
     for (int i = initRow; i < initRow+2; i++){
         for (int j = 0; j < 10; j++){
             blocks[a++]= new Block(j, i, 100, 30, red);
