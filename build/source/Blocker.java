@@ -37,43 +37,30 @@ public void setup(){
     lit = new Line();
     ball = new Ball();
     player = new Player("Player 1");
+    createField();
+}
 
+public void createField() {
     int a = 0;
 
-    /*
-
-    for (int i = 0; i < 60; i++) {
-        for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, red);
-            a++;
-        }
-        for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, red);
-            a++;
-        }
-        for (int j = 0; j < 10; j++){
-            blocks[a]= new Block(j, i, red);
-            a++;
-        }
-    }
-
-    */
-
     for (int i = initRow; i < initRow+2; i++){
-        for (int j = 0; j < 10; j++){
-            blocks[a++]= new Block(j, i, 100, 30, red);
+        for (int j = 0; j < 10; j += 2){
+            blocks[a++] = new Block(j, i, 100, 30, red);
+            blocks[a++] = new Block(j + 1, i, 100, 30, red);
         }
     }
 
     for (int i = initRow+2; i < initRow+4; i++){
-        for (int j = 0; j < 10; j++){
-            blocks[a++]= new Block(j, i, 100, 30, green);
+        for (int j = 0; j < 10; j += 2){
+            blocks[a++] = new Block(j, i, 100, 30, green);
+            blocks[a++] = new Block(j + 1, i, 100, 30, green);
         }
     }
 
     for (int i = initRow+4; i < initRow+6; i++){
-        for (int j = 0; j < 10; j++){
-            blocks[a++]= new Block(j, i, 100, 30, blue);
+        for (int j = 0; j < 10; j += 2){
+            blocks[a++] = new Block(j, i, 100, 30, blue);
+            blocks[a++] = new Block(j + 1, i, 100, 30, blue);
         }
     }
 }
@@ -94,6 +81,7 @@ public void draw(){
         if(gameStarted) {
             // Only if you want to use mouse
             // lit.update();
+
             ball.update(lit);
             if(ball.isTouchingDown()){
                 player.looseLives();
@@ -134,7 +122,8 @@ public void keyPressed() {
         if(gameStarted) {
             lit.update(keyCode);
         }
-    } else {
+    }
+    if (player.lost()) {
         if(key==32) {
             reset();
         }
@@ -147,7 +136,7 @@ class Ball extends Point {
     Velocity velo;
     int posMode = CENTER;
 
-    private final float diameter = 10;
+    private final float diameter = 20;
 
     Ball() {
         super(width/2, height - 80);
@@ -459,7 +448,7 @@ class Line extends Point {
 
     Line() {
         super(width/2, height - 65);
-        velocity = new Velocity(35, 0);
+        velocity = new Velocity(40, 0);
         hb = new HitBox(100, 10, this);
         restore();
     }

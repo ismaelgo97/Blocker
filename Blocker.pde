@@ -21,24 +21,30 @@ void setup(){
     lit = new Line();
     ball = new Ball();
     player = new Player("Player 1");
+    createField();
+}
 
+void createField() {
     int a = 0;
 
     for (int i = initRow; i < initRow+2; i++){
-        for (int j = 0; j < 10; j++){
-            blocks[a++]= new Block(j, i, 100, 30, red);
+        for (int j = 0; j < 10; j += 2){
+            blocks[a++] = new Block(j, i, 100, 30, red);
+            blocks[a++] = new Block(j + 1, i, 100, 30, red);
         }
     }
 
     for (int i = initRow+2; i < initRow+4; i++){
-        for (int j = 0; j < 10; j++){
-            blocks[a++]= new Block(j, i, 100, 30, green);
+        for (int j = 0; j < 10; j += 2){
+            blocks[a++] = new Block(j, i, 100, 30, green);
+            blocks[a++] = new Block(j + 1, i, 100, 30, green);
         }
     }
 
     for (int i = initRow+4; i < initRow+6; i++){
-        for (int j = 0; j < 10; j++){
-            blocks[a++]= new Block(j, i, 100, 30, blue);
+        for (int j = 0; j < 10; j += 2){
+            blocks[a++] = new Block(j, i, 100, 30, blue);
+            blocks[a++] = new Block(j + 1, i, 100, 30, blue);
         }
     }
 }
@@ -59,6 +65,7 @@ void draw(){
         if(gameStarted) {
             // Only if you want to use mouse
             // lit.update();
+
             ball.update(lit);
             if(ball.isTouchingDown()){
                 player.looseLives();
@@ -99,7 +106,8 @@ void keyPressed() {
         if(gameStarted) {
             lit.update(keyCode);
         }
-    } else {
+    }
+    if (player.lost()) {
         if(key==32) {
             reset();
         }

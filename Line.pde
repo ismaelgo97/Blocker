@@ -6,7 +6,7 @@ class Line extends Point {
 
     Line() {
         super(width/2, height - 65);
-        velocity = new Velocity(35, 0);
+        velocity = new Velocity(40, 0);
         hb = new HitBox(100, 10, this);
         restore();
     }

@@ -5,7 +5,7 @@ class Ball extends Point {
     Velocity velo;
     int posMode = CENTER;
 
-    private final float diameter = 10;
+    private final float diameter = 20;
 
     Ball() {
         super(width/2, height - 80);
